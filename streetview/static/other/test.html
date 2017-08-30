@@ -1,0 +1,17 @@
+<html>
+  <head>
+    <script>
+      function test_mod() {
+        var int1=200;
+        var int2=270;
+        var mod = (int1-int2)%360;
+        if (mod < -180) { mod = mod+360; }
+        alert(mod);
+      
+      }
+    </script>
+  </head>
+  <body>
+    <button onclick="test_mod()">Test</button>
+  </body>
+</html>

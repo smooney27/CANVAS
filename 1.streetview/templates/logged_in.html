@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <link rel="stylesheet" href="{% url django.views.static.serve 'stylesheets/style.css' %}" />
+</head>
+<script src="{% url django.views.static.serve 'javascript/jquery-1.5.min.js' %}"></script>
+<script src="{% url django.views.static.serve 'javascript/streetview.js' %}"></script>
+<body>
+    <div id="header">
+      {% if request.logged_in_as %}
+        Logged in as: {{ request.logged_in_as }}, impersonating {{user}}
+        <a href="/admin/">Stop Impersonating {{user}}</a>
+      {% else %}
+        User: {{user}}
+      {% endif %}
+      &nbsp;
+      <a href="{% url ratestreets.views.mainmenu %}">Main Menu</a>
+      <a href="{% url django.contrib.auth.views.logout %}">Logout</a>
+      <a href="{% url django.contrib.auth.views.password_change %}">Change password</a>
+    </div>
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

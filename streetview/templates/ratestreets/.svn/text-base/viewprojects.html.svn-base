@@ -1,0 +1,14 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+
+<h3>Projects</h3>
+{% for project in projects %}
+<ul>
+  <li>
+    <a href="{% url ratestreets.views.editproject project.id %}">{{ project.name }}</a>
+  </li>
+</ul>
+{% endfor %}
+
+{% endblock %}

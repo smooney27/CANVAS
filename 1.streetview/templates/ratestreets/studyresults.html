@@ -1,0 +1,27 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+
+<h3>Quick Results for Study: {{study.name}}</h3>
+<h3 style="color:red">Note: this is not yet fully tested or debugged -- Talk to Steve before you go trusting it.</h3>
+<table>
+  <tr>
+    <th>
+      Item
+    </th>
+    <th>
+      Fleiss' Kappa (ascending)
+    </th>
+  </tr>
+  {% for result in results %}
+    <tr>
+      <td>
+        {{result.item}}
+      </td>
+      <td>
+        {{result.kappa}}
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock %}

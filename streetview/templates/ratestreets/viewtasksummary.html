@@ -1,0 +1,56 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+
+{% load ratestreets_filters %}
+
+<script>
+    $(document).ready(function(){
+    });
+</script>
+<div style="float:right;">
+</div>
+<h3>Welcome to the street rating interface, {{user.username}}</h3>
+<div>
+  You are signed up to rate in the following studies:
+</div>
+<table>
+  <tr>
+    <th>
+      Name
+    </th>
+    <th>
+      Ratings Completed
+    </th>
+    <th>
+      Total Ratings
+    </th>
+    <th>
+      Percent Complete
+    </th>
+    <th>
+      Actions
+    </th>
+  </tr>
+  {% for study in studies %}
+    <tr>
+      <td>
+        {{ study.name }}
+      </td>
+      <td>
+        {% invoke study, completed_tasks, user=user %}
+      </td>
+      <td>
+        {% invoke study, total_tasks, user=user %}
+      </td>
+      <td>
+        {% invoke study, percent_complete, user=user %}%
+      </td>
+      <td>
+        <a href="{% url ratestreets.views.startrating study.id %}" onclick="window.open('{% url ratestreets.views.pano segment_id=None %}', 'pano_window', 'location=0,width=800,height=800');">Start Rating</a>
+        <a href="{% url ratestreets.views.viewtasks study.id %}">View all tasks</a>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock %}

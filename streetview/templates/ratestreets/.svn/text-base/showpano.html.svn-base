@@ -1,0 +1,124 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+  <script type="text/javascript"
+      src="http://maps.google.com/maps/api/js?sensor=false">
+  </script>
+  <div id="pano" style="width:100%;min-height:100%;">&nbsp;</div>
+  <div id="inset_map" style="height:250px;width:250px;position:absolute;bottom:0;right:0;z-index:2">inset map</div>
+  <script type="text/javascript">
+    // Create an green dot icon.  It's weird that this is the best way to change the 
+    // icon color from the default red, but so be it.
+    var green_icon = new google.maps.MarkerImage('http://www.google.com/intl/en_us/mapfiles/ms/micons/green-dot.png');
+    var image_date = null;
+    function set_image_date(new_image_date) {
+      image_date = new_image_date;
+      update_opener_image_date();
+    }
+    function update_opener_image_date() {
+      if (image_date != null && typeof opener.set_image_date == 'function') {
+        opener.set_image_date(image_date)
+      }
+    }
+
+
+    function initialize() {
+      var pano_element = document.getElementById("pano");
+      {% if segment.street_address != None and segment.start_lat == None %}
+        // Use geocoder to convert address to lat_lng
+        var street_address = '{{ segment.street_address }}';
+        var geocoder = new google.maps.Geocoder();
+        geocoder.geocode({address:street_address}, function (results, status) {
+          if (status == google.maps.GeocoderStatus.OK) {
+            var address_location = results[0].geometry.location
+            // Create the inset map.
+            var map = show_inset_map(address_location.lat(), address_location.lng());
+            // And initialize the streetview view.
+            var panorama = g_streetview_service.initialize(address_location.lat(), 
+                                                         address_location.lng(), 
+                                                         address_location.lat(), 
+                                                         address_location.lng(), 
+                                                         pano_element, 
+                                                         map,
+                                                         function (pano) {
+                                                           var addressMarker = new google.maps.Marker({
+                                                             position: new google.maps.LatLng(address_location.lat(), address_location.lng()),
+                                                             title: street_address
+                                                           });
+                                                           addressMarker.setMap(pano);
+                                                         },
+                                                         set_image_date);
+          } else {
+            pano_element.innerHTML = "Could not get lat/lng for address for the following reason: " + status;
+          }
+        });
+      {% else %}
+        // And initialize the streetview view.
+        var start_lat = {{ segment.start_lat }};
+        var start_lng = {{ segment.start_lng }};
+        var end_lat = {{ segment.end_lat }};
+        var end_lng = {{ segment.end_lng }};
+
+        // Create the inset map.
+        var map = show_inset_map(start_lat, start_lng, end_lat, end_lng);
+        var panorama = g_streetview_service.initialize(start_lat, 
+                                                     start_lng,
+                                                     end_lat, 
+                                                     end_lng, 
+                                                     pano_element, 
+                                                     map,
+                                                     function (pano) {
+                                                       var startMarker = new google.maps.Marker({
+                                                         position: new google.maps.LatLng(start_lat, start_lng),
+                                                         icon: green_icon,
+                                                         title: "Starting Location"
+                                                       });
+                                                       startMarker.setMap(pano);
+                                                       var endMarker = new google.maps.Marker({
+                                                         position: new google.maps.LatLng(end_lat, end_lng),
+                                                         title: "Ending Location"
+                                                       });
+                                                       endMarker.setMap(pano);
+                                                     },
+                                                     set_image_date);
+      {% endif %}
+    }
+
+    function show_inset_map(start_lat, start_lng, end_lat, end_lng) {
+        var insetMapOptions = {
+          center: new google.maps.LatLng(start_lat, start_lng),
+          zoom: 15,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          disableDefaultUI: false,
+          streetViewControl: true,
+          mapTypeControl:false,
+          zoomControl:false,
+        };
+        
+        var inset_map_element = document.getElementById('inset_map');
+        map = new google.maps.Map(inset_map_element, insetMapOptions);
+        // Setup the start and end markers on the map if we have all 4.
+        if (typeof(start_lat) != 'undefined' && typeof(start_lng) != 'undefined' && 
+            typeof(end_lat) != 'undefined' && typeof(end_lng) != 'undefined'){
+          var startMarker = new google.maps.Marker({
+            position: new google.maps.LatLng(start_lat, start_lng),
+            map: map,
+            icon: green_icon,
+            title: 'Start'
+          });
+          var endMarker = new google.maps.Marker({
+            position: new google.maps.LatLng(end_lat, end_lng),
+            map: map,
+            title: 'End'
+          });
+        }
+        var bounds = new google.maps.LatLngBounds();
+        bounds.extend(new google.maps.LatLng(start_lat, start_lng));
+        bounds.extend(new google.maps.LatLng(end_lat, end_lng));
+        map.fitBounds(bounds);
+        return map;
+    }
+
+    initialize();
+  </script>
+{% endblock %}

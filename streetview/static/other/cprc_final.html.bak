@@ -1,0 +1,592 @@
+<html> 
+  <head> 
+    <title>CPRC - NYC Data Download Service</title> 
+    <link rel='stylesheet' media="screen" type='text/css' href='css/cprc.css' /> 
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript" id="script">
+
+// change this zoom type to like 12 and the Lat Long to NYC!
+// var tableid = 2141654; 
+var center = new google.maps.LatLng(40.712939,-74.001046);
+var zoom = 12;
+//var zoomControl = false;
+//var scaleControl = false;
+var legend_width = '150px';
+var tableid = 2641981;
+var location_column = 'geometry';
+//var minZoomLevel = 10;
+// Change to Columns TRT_POPDEN and TRT_PCTPOV
+// Grey is this 	#C0C0C0
+// TRT_POPDEN min 0-1 1-something, etc etc max for all is 90,000 - 4 divisions
+// TRT_PCTPOV min 0-0.005 then 0.005- whatever max for all is 1 - 3 divisions
+// INSERT OTHER VARIABLES
+var columns = {
+  
+  // PopDens high of 86314.9 low of -999 - 0 and lowest real vales 2.5, meadian like 15000-16000
+  'PopDens': [
+    {
+      'min': 0,
+      'max': 2500,
+      'color': '#FAEBD7'
+    },{
+      'min': 2500,
+      'max': 10000,
+      'color': '#FFDEAD',
+      //'opacity': 0.7
+    },
+    {
+      'min': 10000,
+      'max': 20000,
+      'color': '#FF7F50',
+      //'opacity': 0.7
+    },
+	 {
+      'min': 20000,
+      'max': 40000,
+      'color': '#FF4500',
+      //'opacity': 0.7
+    },
+    {
+      'min': 40000,
+      'max': 90000,
+      'color': '#800000',
+      //'opacity': 0.7
+    }
+  ],
+  // TotPop, some empty 0 values; first value is 8 and last is 21,199, but most fall under 15,000 and 10,0000
+  'TotPop': [
+    {
+      'min': 1,
+      'max': 1000,
+      'color': '#FFFFFF'
+    },
+    {
+      'min': 1000,
+      'max': 2500,
+      'color': '#FFF0F5'
+    },
+	{
+      'min': 2500,
+      'max': 5000,
+      'color': '#D3D3D3'
+    },
+    {
+      'min': 5000,
+      'max': 7500,
+      'color': '#808080'
+    },
+	{
+      'min': 7500,
+      'max': 15000,
+      'color': '#2F4F4F'
+    },
+    {
+      'min': 15000,
+      'max': 25000,
+      'color': '#000000'
+    }
+  ], 
+  // -3.64412999153 - 43, but more like 11, median is -0.38
+  'NckrmWalk': [
+    {
+      'min': -4,
+      'max': -2,
+      'color': '#8B0000'
+    },
+	{
+      'min': -2,
+      'max': 0,
+      'color': '#FFC0CB'
+    },
+    {
+      'min': 0,
+      'max': 3,
+      'color': '#B0E0E6'
+    },
+    {
+      'min': 3,
+      'max': 10,
+      'color': '#4169E1'
+    },
+    {
+      'min': 10,
+      'max': 50,
+      'color': '#191970'
+    }
+  ],
+  // 0, 8000 - 232768
+  'MHIncome': [
+	{
+      'min': 8000,
+      'max': 20000,
+      'color': '#FFC0CB'
+    },
+	{
+      'min': 20000,
+      'max': 35000,
+      'color': '#FFF8DC'
+    },
+    {
+      'min': 35000,
+      'max': 60000,
+      'color': '#ADFF2F'
+    },
+    {
+      'min': 60000,
+      'max': 100000,
+      'color': '#3CB371'
+    },
+    {
+      'min': 100000,
+      'max': 250000,
+      'color': '#006400'
+    }
+  ],
+  'PctBlack': [
+    {
+      'min': 0.00,
+      'max': 0.02,
+      'color': '#C0C0C0'
+    },
+	{
+      'min': 0.02,
+      'max': 0.25,
+      'color': '#D8BFD8'
+    },
+    {
+      'min': 0.25,
+      'max': 0.50,
+      'color': '#FE3F44'
+    },
+    {
+      'min': 0.50,
+      'max': 0.75,
+      'color': '#BE2F33'
+    },
+    {
+      'min': 0.75,
+      'max': 1.01,
+      'color': '#A40004'
+    }
+  ],
+  'PctWhite': [
+     {
+      'min': 0.00,
+      'max': 0.02,
+      'color': '#C0C0C0'
+    },
+	{
+      'min': 0.02,
+      'max': 0.25,
+      'color': '#D8BFD8'
+    },
+    {
+      'min': 0.25,
+      'max': 0.50,
+      'color': '#FE3F44'
+    },
+    {
+      'min': 0.50,
+      'max': 0.75,
+      'color': '#BE2F33'
+    },
+    {
+      'min': 0.75,
+      'max': 1.01,
+      'color': '#A40004'
+    }
+  ],
+  'PctAsian': [
+     {
+      'min': 0.00,
+      'max': 0.02,
+      'color': '#C0C0C0'
+    },
+	{
+      'min': 0.02,
+      'max': 0.25,
+      'color': '#D8BFD8'
+    },
+    {
+      'min': 0.25,
+      'max': 0.50,
+      'color': '#FE3F44'
+    },
+    {
+      'min': 0.50,
+      'max': 0.75,
+      'color': '#BE2F33'
+    },
+    {
+      'min': 0.75,
+      'max': 1.01,
+      'color': '#A40004'
+    }
+  ],
+  'PctUnemp': [
+    {
+      'min': 0.00,
+      'max': 0.05,
+      'color': '#E6E6FA'
+    },
+	{
+      'min': 0.05,
+      'max': 0.10,
+      'color': '#C0C0C0'
+    },
+    {
+      'min': 0.10,
+      'max': 0.20,
+      'color': '#CD5C5C'
+    },
+    {
+      'min': 0.20,
+      'max': 0.35,
+      'color': '#B22222'
+    },
+    {
+      'min': 0.35,
+      'max': 1.01,
+      'color': '#800000'
+    }
+  ],
+  // Housing Unit Density -999,0 then 1 - 50168
+  'HousUntDen': [
+    {
+      'min': -999,
+      'max': 1,
+      'color': '#C0C0C0'
+    },
+	{
+      'min': 1,
+      'max': 5000,
+      'color': '#FFC0CB'
+    },
+    {
+      'min': 5000,
+      'max': 10000,
+      'color': '#FF0000'
+    },
+    {
+      'min': 10000,
+      'max': 25000,
+      'color': '#B22222'
+    },
+    {
+      'min': 25000,
+      'max': 60000,
+      'color': '#800000'
+    }
+  ],
+  // MedRent 0 for nothing and then first is 231 - 1997
+  'MedRent': [
+    {
+      'min': 0,
+      'max': 1,
+      'color': '#C0C0C0'
+    },
+	{
+      'min': 1,
+      'max': 500,
+      'color': '#B0E0E6'
+    },
+    {
+      'min': 500,
+      'max': 1000,
+      'color': '#00BFFF'
+    },
+    {
+      'min': 1000,
+      'max': 1500,
+      'color': '#0000FF'
+    },
+    {
+      'min': 1500,
+      'max': 2000,
+      'color': '#191970'
+    }
+  ]
+}
+
+
+
+var map, layer;
+
+function initialize() {
+  
+  map = new google.maps.Map(document.getElementById('map_canvas'), {
+    center: center,
+    zoom: zoom,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+  });
+  
+  layer = new google.maps.FusionTablesLayer({
+    query: {
+      select: location_column,
+      from: tableid
+    }
+  });
+  layer.setMap(map);
+  
+  init_selectmenu();
+  addStyle(getKey());
+  generateDownloadForm(document.getElementById('form_parent'));
+}
+
+function getKey() {
+  for(key in columns) {
+    return key;
+  }
+}
+
+// Initialize the drop-down menu
+function init_selectmenu() {
+  var selectmenu = document.getElementById('selector');
+  for(column in columns) {
+    var option = document.createElement('option');
+    option.setAttribute('value', column);
+    option.innerHTML = column;
+    selectmenu.appendChild(option);
+  }
+}
+
+// Apply the style to the layer
+function addStyle(column) {
+  var defined_styles = columns[column];
+  var styles = new Array();
+  
+  for(defined_style in defined_styles) {
+    var style = defined_styles[defined_style];
+    styles.push({
+      where: generateWhere(column, style.min, style.max),
+      polygonOptions: {
+        fillColor: style.color,
+        fillOpacity: style.opacity ? style.opacity : 0.9
+      }
+    });
+  }
+
+  layer.set('styles', styles);
+  updateLegend(column);
+}
+
+// Create the where clause
+function generateWhere(column_name, low, high) {
+  var whereClause = new Array();
+  whereClause.push("'");
+  whereClause.push(column_name);
+  whereClause.push("' >= ");
+  whereClause.push(low);
+  whereClause.push(" AND '");
+  whereClause.push(column_name);
+  whereClause.push("' < ");
+  whereClause.push(high);
+  return whereClause.join('');
+}
+
+// Create the legend with the corresponding colors
+function updateLegend(column) {
+  var legendDiv = document.createElement('div');
+  var legend = new Legend(legendDiv, column);
+  legendDiv.index = 1;
+  map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].pop();
+  map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legendDiv);
+}
+
+// Generate the content for the legend
+function Legend(controlDiv, column) {
+  controlDiv.style.padding = '10px';
+  var controlUI = document.createElement('div');
+  controlUI.style.backgroundColor = 'white';
+  controlUI.style.borderStyle = 'solid';
+  controlUI.style.borderWidth = '1px';
+  controlUI.style.width = legend_width;
+  controlUI.title = 'Legend';
+  controlDiv.appendChild(controlUI);
+  var controlText = document.createElement('div');
+  controlText.style.fontFamily = 'Arial,sans-serif';
+  controlText.style.fontSize = '12px';
+  controlText.style.paddingLeft = '4px';
+  controlText.style.paddingRight = '4px';
+
+  controlText.innerHTML = legendContent(column);
+  controlUI.appendChild(controlText);
+}
+
+function legendContent(column) {
+  var defined_styles = columns[column];
+
+  // Generate the content for the legend using colors from object
+  var controlTextList = new Array();
+  controlTextList.push('<p><b>');
+  controlTextList.push(column);
+  controlTextList.push('</b></p>');
+  for(defined_style in defined_styles) {
+    var style = defined_styles[defined_style];
+    controlTextList.push('<div style="background-color: ');
+    controlTextList.push(style.color);
+    controlTextList.push('; height: 20px; width: 20px; margin: 3px; float: left;"></div>');
+    controlTextList.push(style.min);
+    controlTextList.push(' - ');
+    controlTextList.push(style.max);
+    controlTextList.push('<br style="clear: both;"/>');
+  }
+
+  controlTextList.push('<br />');
+  return controlTextList.join('');
+}
+
+function generateDownloadForm(parentElement) {
+  var rootElement = document.createElement('div');
+  var form = document.createElement('form');
+  rootElement.appendChild(form);
+  for (column in columns) {
+    var input = document.createElement('input');
+    input.type = 'checkbox';
+    input.value = column;
+    input.name = 'columns';
+    var label = document.createElement('span');
+    label.className = 'welcome';
+    label.appendChild(input);
+    label.appendChild(document.createTextNode(column));
+    var paragraph = document.createElement('p');
+    paragraph.appendChild(label);
+    form.appendChild(paragraph);
+  }
+  var submitButton = document.createElement('button');
+  submitButton.appendChild(document.createTextNode('Download'));
+  submitButton.onclick = function() {
+    var selected_columns = ['GEOID', 'ALAND10', 'AWATER10'];
+    for (var i = 0; i < form.columns.length; i++) {
+      if (form.columns[i].checked) {
+        selected_columns.push(form.columns[i].value);
+      }
+    }
+    // Note: this looks prone to SQL-injection attacks, but that's FusionChart's job to deal 
+    // with, not ours.
+    var columns = selected_columns.join(",");
+    var download_url = 'https://www.google.com/fusiontables/api/query?sql=SELECT%20' + columns + '%20FROM%20' + tableid
+    document.location = download_url;
+  }
+  rootElement.appendChild(submitButton);
+  parentElement.appendChild(rootElement);
+}
+
+</script>
+  </head>
+
+<body onLoad="initialize();">
+
+<!--<p align="center"><img src="images/cprc_logo.gif" width="602" height="60" alt="CPRC"></p>
+<p align="center" class="welcome">Welcome to Columbia University's Population Research Center 
+<br>New York City Data Download Service<br><br>Select a variable to map<br>(Download variables below)</p> -->
+<div id="masthead"> 
+      <h1><img src="images/cprc_logo.gif" width="602" height="60" alt="cprc_logo"></h1> 
+    </div> 
+    <div id="content"> 
+      <h2><center>
+
+        <p>Welcome to the Columbia Population Research Center:<br>
+       New York City Data Download Service (version 0.4)</p>
+      </center></h2> 
+        <!--<p>Course-related content will be available here and on courseworks [insert link]. </p> 
+        <p>2nd Paragraph</p> 
+        <p>3rd Paragraph</p>  -->
+    Please Note: a few Cenus Tracts in the Bronx and Queens are not rendering due to geometry - will fix soon.</div> 
+    <p align="left">
+  <select onChange="addStyle(this.value);" id="selector">
+  </select>
+
+</p>
+<div id="map_canvas"></div>
+
+<div align="left">
+  <!--<div align="right">
+  <!--<div id="code"> 
+  <div align="right">
+    <p>&nbsp;</p>
+  </div>
+</div> -->
+  <script type="text/javascript" src="check_box_array.js"></script>
+  <body>
+</div>
+  
+<div id="content"> 
+      <h2>Use Check boxes to download American Community Survey and/or <br>Built Environment Variables</h2>
+
+      <p>Census Data was collected from the U.S. Census Bureau's 2006-2010 American Community Survey [<a href="http://www.census.gov/acs/www/">American Community Survey website</a>]. Click submit to download the .csv file. Please make sure your browser is allowing pop-ups for this page.</p> 
+    <!--  <p>2nd Paragraph</p>  -->
+    <a href="http://www.nyc.gov/html/dcp/download/bytes/nyct2010_11aav.zip">Download NYC Department of City Planning's 2010 NYC Census Tract shapefile</a><br><br><br><h2>Download Census and Built Environment Variables:</h2></div>
+<!--
+<form name="form1" method="post" onSubmit="return validate(this)">
+  <p align="left">
+    <input type="checkbox" name="variables" value="a">
+    <span class="welcome">Total Population [TotPop]</span></p>
+
+  <p align="left">
+    <span class="welcome">
+    <input type="checkbox" name="variables" value="b">
+  Population Density (per square kilometer) [PopDens]</span></p>
+  <p align="left">
+    <span class="welcome">
+    <input type="checkbox" name="variables" value="c">
+  Walkability [NckrmWalk]</span></p>
+
+  <p align="left">
+    <span class="welcome">
+    <input type="checkbox" name="variables" value="d">
+  Median Household Income [MHIncome]</span></p>
+  <p align="left">
+    <span class="welcome">
+    <input type="checkbox" name="variables" value="e">
+  Percent Black [PctBlack]</span></p>
+
+  <p align="left">
+    <span class="welcome">
+    <input type="checkbox" name="variables" value="f">
+  Percent White [PctWhite]</span></p>
+  <p align="left">
+    <span class="welcome">
+    <input type="checkbox" name="variables" value="g">
+  Percent Asian [PctAsian]</span></p>
+
+  <p align="left">
+    <span class="welcome">
+    <input type="checkbox" name="variables" value="h">
+  Percent Unemployed [PctUnemp]</span></p>
+  <p align="left">
+    <span class="welcome">
+    <input type="checkbox" name="variables" value="i">
+  Housing Unit Density (per square kilomter) [HousUntDen]</span></p>
+
+  <p align="left">
+    <span class="welcome">
+    <input type="checkbox" name="variables" value="j">
+  Median Contract Rent [MedRent]</span></p>
+  
+  
+-->
+  <!--<p align="left" class="welcome">After selecting Submit, hit Ctrl C (on Windows) or Command C (on a Mac) and then paste the data link in a new browser window or tab</p> -->
+<--
+  <p align="left">
+    <input type="submit" value="Submit"> <input type="reset" value="Reset">
+  </p>
+
+</form>
+-->
+Alternate download form:
+
+<div id="form_parent"></div>
+
+
+<div id="content">
+  <p>Attention: must allow Pop-ups from this page  
+<p>Disclaimer: (version 0.4)
+<p>Links:<br>
+    <a href="http://www.columbia.edu/">Columbia University Mainpage</a><br><a href="http://www.cupop.columbia.edu/">Columbia Population Research Center</a><br><a href="http://www.beh.columbia.edu/">Built Environment and Health Project</a>
+  <p>References to online tools used:<br><a href="http://www.google.com/fusiontables/Home/">Google: Fusion Tables</a><br>
+<a href="http://shpescape.com/">Josh Livni: Shape to Fusion</a></div>
+
+</body>
+
+</html>

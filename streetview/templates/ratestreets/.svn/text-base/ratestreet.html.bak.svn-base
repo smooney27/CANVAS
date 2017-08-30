@@ -1,0 +1,452 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+
+<script type="text/javascript"
+    src="http://maps.google.com/maps/api/js?sensor=false">
+</script>
+<script type="text/javascript">
+
+  var category_controls = [];
+  var count_controls = [];
+
+  function find_or_open_pano_window() {
+    var pano_window = window.open('{% url ratestreets.views.pano task_id=task.id %}', 'pano_window', 'location=0,width=800,height=800');
+    pano_window.focus();
+  }
+  
+  function find_target_for_event(event) {
+    var target = null;
+    if (event.target) {
+      target = event.target;
+    } else if (event.srcElement){
+      target = event.srcElement;
+    } else {
+      alert('unexpected lack of taget for event: ' + event);
+    }
+    return target;
+  }
+
+  function find_unknown_radio_button_for_button(element) {
+    var elements = document.getElementsByName(element.name);
+    for (i = 0; i < elements.length; i++) {
+      var current_element = elements[i];
+      if (current_element.value == '-1') {
+        return current_element;
+      }
+    }
+    return null;
+  }
+
+  function BooleanManager() {
+    this.find_field_id = function(element) {
+      var element_id = element.id;
+      if (element_id.match(/^id_form-(\d+)-rating$/)) {
+        var match = /^id_form-(\d+)-rating$/.exec(element_id); 
+        if (match.length == 2) {
+          return match[1];
+        }
+      }
+      return -1;
+    }
+    
+    this.has_unknown_value = function(element) {
+      return (element.value == '0');
+    }
+  }; 
+
+  function CountManager() {
+    this.find_field_id = function(element) {
+      var element_id = element.id;
+      if (element_id.match(/^id_count-(\d+)-cannot_tell$/)) {
+        var match = /^id_count-(\d+)-cannot_tell$/.exec(element_id); 
+        if (match.length == 2) {
+          return match[1];
+        }
+      }
+      return -1;
+    }
+
+    this.find_impediment_select_field = function(element) {
+      var field_id = this.find_field_id(element);
+      var impediment_select_id = "id_count-" + field_id + "-impediment";
+      return document.getElementById(impediment_select_id);
+    }
+
+    this.get_impediment_label_id = function(element) {
+      var field_id = this.find_field_id(element);
+      return "id_count-" + field_id + "-impediment-label";
+    }
+
+    this.find_impediment_label_field = function(element) {
+      var impediment_label_id = this.get_impediment_label_id(element);
+      return document.getElementById(impediment_label_id);
+    }
+    
+    this.has_unknown_value = function(element) {
+      return (element.checked == true);
+    }
+  }; 
+
+  function FieldManager(prefix, suffix, has_unknown_value) {
+    this.find_field_id = function(element) {
+      var element_id = element.id;
+      var regexp = new RegExp('^id_' + prefix + '-(\\d+)-' + suffix + '$');
+      if (element_id.match(regexp)) {
+        var match = regexp.exec(element_id); 
+        if (match.length >= 2) {
+          return match[1];
+        }
+      }
+      return -1;
+    }
+
+    this.find_impediment_select_field = function(element) {
+      var field_id = this.find_field_id(element);
+      var impediment_select_id = "id_" + prefix + "-" + field_id + "-impediment";
+      return document.getElementById(impediment_select_id);
+    }
+
+    this.get_impediment_label_id = function(element) {
+      var field_id = this.find_field_id(element);
+      return "id_" + prefix + "-" + field_id + "-impediment-label";
+    }
+
+    this.find_impediment_label_field = function(element) {
+      var impediment_label_id = this.get_impediment_label_id(element);
+      return document.getElementById(impediment_label_id);
+    }
+
+    this.find_previous_field_options_list = function(element) {
+      var field_id = this.find_field_id(element);
+      var previous_field_id = field_id - 1;
+      if (previous_field_id >= 0) {
+        // todo$ does rating only apply for categories?
+        var previous_field_label_name = "id_" + prefix + "-" + previous_field_id + "-rating_0";
+        var selector = 'label[for=' + previous_field_label_name + ']';
+        var item_list = $(selector);
+        // UL is grandparent of second label.
+        return item_list[1].parentNode.parentNode;
+      } else {
+        return null;
+      }
+    }
+
+    if (typeof(has_unknown_value) != 'undefined') {
+      this.has_unknown_value = has_unknown_value; 
+    } else {
+      this.has_unknown_value = function(element) {
+        return (element.value == '-1');
+      }
+    }
+  }; 
+
+  function CategoryManager() {
+    this.find_field_id = function(element) {
+      var element_id = element.id;
+      if (element_id.match(/^id_category-(\d+)-rating$/)) {
+        var match = /^id_category-(\d+)-rating$/.exec(element_id); 
+        if (match.length == 2) {
+          return match[1];
+        }
+      }
+      return -1;
+    }
+
+    this.find_impediment_select_field = function(element) {
+      var field_id = this.find_field_id(element);
+      var impediment_select_id = "id_category-" + field_id + "-impediment";
+      return document.getElementById(impediment_select_id);
+    }
+
+    this.get_impediment_label_id = function(element) {
+      var field_id = this.find_field_id(element);
+      return "id_category-" + field_id + "-impediment-label";
+    }
+
+
+    this.find_impediment_label_field = function(element) {
+      var impediment_label_id = this.get_impediment_label_id(element);
+      return document.getElementById(impediment_label_id);
+    }
+
+    this.has_unknown_value = function(element) {
+      return (element.value == '-1');
+    }
+  }; 
+
+
+  function show_impediment_select_if_necessary(element, manager) {
+    var impediment_select = manager.find_impediment_select_field(element);
+    var impediment_label = manager.find_impediment_label_field(element);
+    if (manager.has_unknown_value(element)) {
+      // If value is unknown, show the impediment field
+      if (impediment_select != null) {
+        impediment_select.style.display = '';
+      }
+      if (impediment_label != null) {
+        impediment_label.style.display = '';
+      } else {
+        // If no impediment label exists, add one.
+        var impediment_label = document.createElement("label");
+        impediment_label.id = manager.get_impediment_label_id(element);
+        impediment_label.innerHTML = "Why can't you tell?&nbsp;";
+        impediment_select.parentNode.insertBefore(impediment_label, impediment_select);
+      }
+    } else {
+      if (impediment_select != null) {
+        impediment_select.style.display = 'none';
+        impediment_select.value = '';
+      }
+      if (impediment_label != null) {
+        impediment_label.style.display = 'none';
+      }
+    }
+  }
+  
+  function hide_previous_options_if_appropriate(element, manager) {
+    var previous_field_options_list = manager.find_previous_field_options_list(element);
+    if (typeof(previous_field_options_list) != 'undefined' && previous_field_options_list != null) {
+      var expand_button = document.createElement("button");
+      expand_button.appendChild(document.createTextNode("Expand Options Again"));
+      expand_button.onclick = function() {
+        previous_field_options_list.style.display = "";
+        previous_field_options_list.parentNode.removeChild(expand_button);
+      }
+      previous_field_options_list.style.display = "none";
+      
+      previous_field_options_list.parentNode.insertBefore(expand_button, previous_field_options_list);
+    }
+  }
+
+  function CategoryControl(field_id) {
+    this.field_id = field_id;
+    this.question_element = null;
+    this.options_element = null;
+    this.impediment_element = null;
+    this.options_toggle_button = null;
+    this.input_elements = null;
+
+    // Find elements.
+    var label_selector = 'label[for=id_category-' + this.field_id + '-rating_0]';
+    var label_matches = $(label_selector);
+    this.question_element = label_matches[0].parentNode;
+    this.options_element = label_matches[1].parentNode.parentNode;
+    var impediment_selector = 'select#id_category-' + this.field_id + '-impediment';
+    var impediment_matches = $(impediment_selector);
+    this.impediment_element = impediment_matches[0].parentNode;
+    var input_elements_selector = 'input[name=category-' + this.field_id + '-rating]';
+    this.input_elements = $(input_elements_selector);
+
+    // Utility methods
+    this.toggleImpedimentElement = function(should_show) {
+      var display_value = should_show ? "" : "none";
+      this.impediment_element.style.display = display_value;
+    }
+    this.ensureToggleButton = function() {
+      if (this.options_toggle_button == null) {
+        this.options_toggle_button = document.createElement("button");
+        this.options_toggle_button.appendChild(document.createTextNode("+"));
+        this.options_toggle_button.onclick = function(control){ return function(event) { control.toggleOptionsElement(true); return false; } }(this);
+        this.options_element.parentNode.insertBefore(this.options_toggle_button, this.options_element);
+        this.question_element.style.display='inline';
+        var spacer = document.createElement("br");
+        this.options_element.parentNode.insertBefore(spacer, this.options_element);
+      }
+    }
+    this.toggleOptionsElement = function(should_show) {
+      this.ensureToggleButton();
+      if (should_show) {
+        this.options_element.style.display = "";
+        while (this.options_toggle_button.hasChildNodes()) {
+          this.options_toggle_button.removeChild(this.options_toggle_button.firstChild);
+        }
+        this.options_toggle_button.appendChild(document.createTextNode("-"));
+        this.options_toggle_button.onclick = function(control){ return function(event) { control.toggleOptionsElement(false); return false; } }(this);
+        if (this.getSelectedValue() == -1) {
+          this.toggleImpedimentElement(true);
+        }
+        this.question_element.style.color='black';
+      } else {
+        this.options_element.style.display = "none";
+        while (this.options_toggle_button.hasChildNodes()) {
+          this.options_toggle_button.removeChild(this.options_toggle_button.firstChild);
+        }
+        this.options_toggle_button.appendChild(document.createTextNode("+"));
+        this.options_toggle_button.onclick = function(control){ return function(event) { control.toggleOptionsElement(true); return false; } }(this);
+        if (this.getSelectedValue() == -1) {
+          this.toggleImpedimentElement(false);
+        }
+        this.question_element.style.color='green';
+      }
+    }
+    this.getSelectedValue = function() {
+      var selected_value = null;
+      this.input_elements.each(function(index, element) {
+        if (element.checked == true) {
+          selected_value = parseInt(element.value);
+        }
+      });
+      return selected_value;
+    }
+    // Show impediment element as necessary.
+    this.toggleImpedimentElement(this.getSelectedValue() == -1);
+    this.input_elements.change(function(control) { return function(event) {
+      control.toggleImpedimentElement(control.getSelectedValue() == -1);
+      // If we've selected an option for this question, collapse the previous question.
+      hide_previous_control_options(control.field_id);
+      update_unfinished_category_control_count();
+    }}(this));
+  };
+
+  function hide_previous_control_options(control_id) {
+    if (control_id > 0) {
+      var previous_control = category_controls[control_id - 1];
+      if (typeof(previous_control) != 'undefined' && previous_control != null && previous_control.getSelectedValue() != null) {
+        previous_control.toggleOptionsElement(false);
+      }
+    }
+  }
+  
+  function find_and_register_category_controls() {
+    var radio_category_manager = new FieldManager('category', 'rating_\\d+', function(element) {
+      return (element.checked == true);
+    });
+    $('input[type=radio]').each(function(index, element) {
+      var control_id = parseInt(radio_category_manager.find_field_id(element));
+      if (typeof(category_controls[control_id]) == 'undefined') {
+        var control = new CategoryControl(control_id);
+        category_controls[control_id] = control;
+        if (control.getSelectedValue() != null) {
+          hide_previous_control_options(control_id);
+        }
+      }
+    });
+    update_unfinished_category_control_count();
+  }
+  
+  function update_unfinished_category_control_count() {
+    var unanswered_questions = 0;
+    for (index in category_controls) {
+      if (category_controls[index].getSelectedValue() == null) {
+        unanswered_questions++;
+      }
+    }
+    if (unanswered_questions > 0) {
+      $('#unanswered_questions').text(unanswered_questions + " categorical questions are still unanswered");
+    } else {
+      $('#unanswered_questions').text("");
+      $('#submit')[0].disabled = false;
+    }
+    
+  }
+  
+  function CountControl(field_id) {
+    this.field_id = field_id;
+    this.question_element = null;
+    this.impediment_checkbox_element = null;
+    this.impediment_element = null;
+
+    // Find elements.
+    var label_selector = 'label[for=id_count-' + this.field_id + '-rating]';
+    var label_matches = $(label_selector);
+    this.question_element = label_matches[0].parentNode;
+    var impediment_checkbox_selector = 'input#id_count-' + this.field_id + '-cannot_tell';
+    this.impediment_checkbox_jquery_result = $(impediment_checkbox_selector);
+    var impediment_selector = 'select#id_count-' + this.field_id + '-impediment';
+    var impediment_matches = $(impediment_selector);
+    this.impediment_element = impediment_matches[0].parentNode;
+
+    // Utility methods
+    this.toggleImpedimentElement = function(should_show) {
+      var display_value = should_show ? "" : "none";
+      this.impediment_element.style.display = display_value;
+    }
+    this.getCannotTellValue = function() {
+      return this.impediment_checkbox_jquery_result[0].checked == true;
+    }
+    // Show impediment element as necessary.
+    this.toggleImpedimentElement(this.getCannotTellValue());
+    var checkbox_callback = function(control) { return function(event) {
+      control.toggleImpedimentElement(control.getCannotTellValue());
+    }}(this);
+    this.impediment_checkbox_jquery_result.bind('click', checkbox_callback);
+  };
+    
+
+  function find_and_register_count_controls() {
+    var count_manager = new FieldManager('count', 'rating', function(element) {
+      return (element.checked == true);
+    });
+    $('input[type=text]').each(function(index, element) {
+      var control_id = parseInt(count_manager.find_field_id(element));
+      if (control_id >= 0 && typeof(count_controls[control_id]) == 'undefined') {
+        var control = new CountControl(control_id);
+        count_controls[control_id] = control;
+      }
+    });
+  
+  }
+  
+  $(document).ready(function(){
+    find_and_register_category_controls();
+    find_and_register_count_controls();
+    
+//    var category_manager = new FieldManager('category', 'rating');
+//    var radio_category_manager = new FieldManager('category', 'rating_\\d+', function(element) {
+//      return (element.checked == true);
+//    });
+    // Show appropriate impediment selects on load.
+//    $('select').each(function(index, element) {
+//        show_impediment_select_if_necessary(element, category_manager);
+//    });
+    // For initial load, match only elements corresponding to cannot tell.
+//    $('input[type=radio][value=-1]').each(function(index, element) {
+//        show_impediment_select_if_necessary(element, radio_category_manager);
+//    });
+//    $('input[type=checkbox]').each(function(index, element) {
+//        show_impediment_select_if_necessary(element, count_manager);
+//    });
+    // And register to check on future changes.
+//    $('select').change(function(event) {
+//        var target = find_target_for_event(event);
+//        show_impediment_select_if_necessary(target, category_manager);
+//    });
+    // For changes, match any radio button.
+//    $('input[type=radio]').change(function(event) {
+//        var target = find_target_for_event(event);
+//        var unknown_element = find_unknown_radio_button_for_button(target);
+//        if (unknown_element != null) {
+//          show_impediment_select_if_necessary(unknown_element, radio_category_manager);
+//          hide_previous_options_if_appropriate(unknown_element, radio_category_manager);
+//        }
+//    });
+//    $('input[type=checkbox]').change(function(event) {
+//        var target = find_target_for_event(event);
+//        show_impediment_select_if_necessary(target, count_manager);
+//    });
+    find_or_open_pano_window();
+  });
+  
+</script>
+  <a href="{% url ratestreets.views.viewtasksummary %}">Back to Task List</a>
+  <button onclick="find_or_open_pano_window()">Show Streetview window</button>
+  <h3>Rate street {{task.segment}}</h3>
+  <h3>Rating Group:{{task.module}}</h3>
+  <div id="form" style="width:100%; height:200px;">
+    <form action="" method="post">
+      {% csrf_token %}
+      {% autoescape off %}
+        {% for formset in formsets %}
+          {{ formset.management_form }}
+          {% for form in formset.forms %}
+              {{ form.as_p }}
+          {% endfor %}
+        {% endfor %}
+      {% endautoescape %}
+      <div id="unanswered_questions"></div>
+      <input id="submit" disabled="true" type="submit" value="Submit" />
+    </form>
+  </div>
+
+{% endblock %}

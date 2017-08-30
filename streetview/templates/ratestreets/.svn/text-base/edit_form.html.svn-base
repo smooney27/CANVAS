@@ -1,0 +1,16 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+
+<h3>Edit {{item_type}}</h3>
+<div id="form">
+  <form action="" method="post">
+    {% csrf_token %}
+    {% autoescape off %}
+      {{ form.as_p }}
+    {% endautoescape %}
+    <input type="submit" value="Update" />
+  </form>
+</div>
+
+{% endblock %}

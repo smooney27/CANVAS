@@ -1,0 +1,42 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+
+<h3>Quick Results for Study: {{study.name}}</h3>
+<p>Note: Results ordered by percent agreement (ascending)</p>
+<table>
+  <tr>
+    <th>
+      Item
+    </th>
+    <th>
+      Percent Agreement
+    </th>
+    <th>
+      Fleiss' Kappa
+    </th>
+    <th>
+      # of ratings used
+    </th>
+  </tr>
+  {% for result in results %}
+    <tr>
+      <td>
+        {{result.item}}
+      </td>
+      <td>
+        {{result.percent_agreement|floatformat:3}} 
+      </td>
+      <td>
+        {{result.kappa|floatformat:3}}
+      </td>
+      <td>
+        {{result.kappa_rating_count}}
+      </td>
+      <td>
+        <a href="{% url ratestreets.views.analyzeagreement study.id, result.item_id %}">Analyze Agreement</a>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock %}

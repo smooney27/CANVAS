@@ -1,0 +1,251 @@
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/templates/ratestreets
+END
+mapexperiment.html
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/cu-streetview_streetviewsvn/!svn/ver/38/templates/ratestreets/mapexperiment.html
+END
+new_form_with_attachment.html
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/templates/ratestreets/new_form_with_attachment.html
+END
+viewtasks.html
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/cu-streetview_streetviewsvn/!svn/ver/27/templates/ratestreets/viewtasks.html
+END
+select_segments.html
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/cu-streetview_streetviewsvn/!svn/ver/19/templates/ratestreets/select_segments.html
+END
+results_for_item.html
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/cu-streetview_streetviewsvn/!svn/ver/24/templates/ratestreets/results_for_item.html
+END
+showallhelptext.html
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/cu-streetview_streetviewsvn/!svn/ver/11/templates/ratestreets/showallhelptext.html
+END
+viewadmintasks.html
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/cu-streetview_streetviewsvn/!svn/ver/72/templates/ratestreets/viewadmintasks.html
+END
+studyresults.html
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/cu-streetview_streetviewsvn/!svn/ver/53/templates/ratestreets/studyresults.html
+END
+create_tasks_form.html
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/cu-streetview_streetviewsvn/!svn/ver/57/templates/ratestreets/create_tasks_form.html
+END
+help_text.html
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/cu-streetview_streetviewsvn/!svn/ver/16/templates/ratestreets/help_text.html
+END
+showpano.html
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/cu-streetview_streetviewsvn/!svn/ver/49/templates/ratestreets/showpano.html
+END
+viewmodules.html
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/cu-streetview_streetviewsvn/!svn/ver/17/templates/ratestreets/viewmodules.html
+END
+showpano_v2.html
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/cu-streetview_streetviewsvn/!svn/ver/24/templates/ratestreets/showpano_v2.html
+END
+select_segments_noverify.html
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/cu-streetview_streetviewsvn/!svn/ver/83/templates/ratestreets/select_segments_noverify.html
+END
+edit_segment.html
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/cu-streetview_streetviewsvn/!svn/ver/64/templates/ratestreets/edit_segment.html
+END
+edit_form.html
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/templates/ratestreets/edit_form.html
+END
+import_from_csv.html
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/templates/ratestreets/import_from_csv.html
+END
+viewstudies.html
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/cu-streetview_streetviewsvn/!svn/ver/81/templates/ratestreets/viewstudies.html
+END
+emptypano.html
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/templates/ratestreets/emptypano.html
+END
+new_form.html
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/templates/ratestreets/new_form.html
+END
+autoselect_segments.html
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/cu-streetview_streetviewsvn/!svn/ver/62/templates/ratestreets/autoselect_segments.html
+END
+ratestreet.html.bak
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/templates/ratestreets/ratestreet.html.bak
+END
+samplemap.html
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/cu-streetview_streetviewsvn/!svn/ver/81/templates/ratestreets/samplemap.html
+END
+list_segments.html
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/cu-streetview_streetviewsvn/!svn/ver/71/templates/ratestreets/list_segments.html
+END
+ratestreet.html
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/cu-streetview_streetviewsvn/!svn/ver/82/templates/ratestreets/ratestreet.html
+END
+viewprojects.html
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/templates/ratestreets/viewprojects.html
+END
+dotask.html
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/templates/ratestreets/dotask.html
+END
+evaluate_raters.html
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/cu-streetview_streetviewsvn/!svn/ver/57/templates/ratestreets/evaluate_raters.html
+END
+ratingtimes.html
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/cu-streetview_streetviewsvn/!svn/ver/32/templates/ratestreets/ratingtimes.html
+END
+view_users.html
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/templates/ratestreets/view_users.html
+END
+savekappas.html
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/cu-streetview_streetviewsvn/!svn/ver/6/templates/ratestreets/savekappas.html
+END
+generic_form.html
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/cu-streetview_streetviewsvn/!svn/ver/36/templates/ratestreets/generic_form.html
+END
+view_object.html
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/templates/ratestreets/view_object.html
+END
+new_user_confirm.html
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/templates/ratestreets/new_user_confirm.html
+END
+totalresults.html
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/cu-streetview_streetviewsvn/!svn/ver/29/templates/ratestreets/totalresults.html
+END
+success.html
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/templates/ratestreets/success.html
+END
+submitrating.html
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/templates/ratestreets/submitrating.html
+END
+quickmap.html
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/cu-streetview_streetviewsvn/!svn/ver/57/templates/ratestreets/quickmap.html
+END
+selectquickmap.html
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/cu-streetview_streetviewsvn/!svn/ver/57/templates/ratestreets/selectquickmap.html
+END
+viewtasksummary.html
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/cu-streetview_streetviewsvn/!svn/ver/24/templates/ratestreets/viewtasksummary.html
+END
+edit_form_with_attachment.html
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/templates/ratestreets/edit_form_with_attachment.html
+END

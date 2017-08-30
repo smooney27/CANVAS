@@ -1,0 +1,10 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+
+<h3>View {{item_type}}</h3>
+<div id="object">
+  {{ object }}
+</div>
+
+{% endblock %}

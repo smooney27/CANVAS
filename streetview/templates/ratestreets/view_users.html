@@ -1,0 +1,38 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+
+<table border='1'>
+  <tr>
+    <th>Name</th>
+    <th>Studies as Director</th>
+    <th>Studies as Manager</th>
+    <th>Studies as Rater</th>
+    <th>Actions</th>
+  </tr>
+  {% for user in users %}
+    <tr>
+      <td>{{user.username}}</td>
+      <td>
+          {% for study in user.directed_studies_set.all %}
+            {{study.name}}<br/>
+          {% endfor %}
+      </td>
+      <td>
+          {% for study in user.managed_studies_set.all %}
+            {{study.name}}<br/>
+          {% endfor %}
+      </td>
+      <td>
+          {% for study in user.rated_studies_set.all %}
+            {{study.name}}<br/>
+          {% endfor %}
+      </td>
+      <td>
+          <a href='{% url ratestreets.views.edituser user.id %}'>Edit Details</a>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+<a href='{% url ratestreets.views.createuser %}'>New User</a>
+{% endblock %}

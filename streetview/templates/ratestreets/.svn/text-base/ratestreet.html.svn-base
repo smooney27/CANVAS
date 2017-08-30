@@ -1,0 +1,604 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+
+<script type="text/javascript"
+    src="http://maps.google.com/maps/api/js?v=3.4&sensor=false">
+</script>
+<script type="text/javascript">
+
+  var category_controls = [];
+  var category_controls_by_question_id = {};
+  var count_controls = [];
+  var text_controls = [];
+  
+  function set_image_date(image_date) {
+    for (index in count_controls) {
+      count_controls[index].setImageDate(image_date);
+    }
+    for (index in category_controls) {
+      category_controls[index].setImageDate(image_date);
+    }
+    for (index in text_controls) {
+      text_controls[index].setImageDate(image_date);
+    }
+  }
+
+  function find_or_open_pano_window() {
+    var pano_window = g_streetview_service.open_pano_window('{{pano_url}}');
+    pano_window.focus();
+    pano_window.update_opener_image_date();
+  }
+
+  function find_or_open_pano_window_v2() {
+    var pano_window = g_streetview_service.open_pano_window('{% url ratestreets.views.pano_v2 segment_id=task.segment.id %}');
+    pano_window.focus();
+  }
+
+  function find_or_open_help_window(url) {
+    var help_window = window.open(url, 'help_window', 'location=0,width=700,height=400,scrollbars=1');
+    help_window.focus();
+    return false;
+  }
+
+  function FieldManager(prefix, suffix, has_unknown_value) {
+    this.find_field_id = function(element) {
+      var element_id = element.id;
+      var regexp = new RegExp('^id_' + prefix + '-(\\d+)-' + suffix + '$');
+      if (element_id.match(regexp)) {
+        var match = regexp.exec(element_id); 
+        if (match.length >= 2) {
+          return match[1];
+        }
+      }
+      return -1;
+    }
+
+    this.find_impediment_select_field = function(element) {
+      var field_id = this.find_field_id(element);
+      var impediment_select_id = "id_" + prefix + "-" + field_id + "-impediment";
+      return document.getElementById(impediment_select_id);
+    }
+
+    this.get_impediment_label_id = function(element) {
+      var field_id = this.find_field_id(element);
+      return "id_" + prefix + "-" + field_id + "-impediment-label";
+    }
+
+    this.find_impediment_label_field = function(element) {
+      var impediment_label_id = this.get_impediment_label_id(element);
+      return document.getElementById(impediment_label_id);
+    }
+
+    this.find_previous_field_options_list = function(element) {
+      var field_id = this.find_field_id(element);
+      var previous_field_id = field_id - 1;
+      if (previous_field_id >= 0) {
+        // todo$ does rating only apply for categories?
+        var previous_field_label_name = "id_" + prefix + "-" + previous_field_id + "-rating_0";
+        var selector = 'label[for=' + previous_field_label_name + ']';
+        var item_list = $(selector);
+        // UL is grandparent of second label.
+        return item_list[1].parentNode.parentNode;
+      } else {
+        return null;
+      }
+    }
+
+    if (typeof(has_unknown_value) != 'undefined') {
+      this.has_unknown_value = has_unknown_value; 
+    } else {
+      this.has_unknown_value = function(element) {
+        return (element.value == '-1');
+      }
+    }
+  }; 
+
+  function ControlBase(field_id) {
+    this.skip_pattern = null;
+
+    // skip pattern operators.
+    var operators = [
+      { 
+        split: "==",
+        test: function(a, b) { return a == b; }
+      },
+      {
+        split: "!=",
+        test: function(a, b) { return a != b; }
+      },
+	  // Hack to make REDCaP work -- the branching logic for REDCaP uses <> and defines when to show, not when to skip
+	  // So here, we pretend that <> indicates ==, and = indicates !=
+	  // Longer term, we may want to have a skip pattern type and use different logic/operators depending on the type.
+      { 
+        split: " <> ",
+        test: function(a, b) { return a != b; }
+      },
+      { 
+        split: " = ",
+        test: function(a, b) { return a == b; }
+      },
+    ];
+    this.setImageDate = function(image_date_value) {
+      this.image_date_element.value = image_date_value;
+    }
+    this.evalSkipPattern = function() {
+      // todo$ may need to tweak this/go to a more formal solution if we need and expressions
+      // Assume we don't need to skip.
+      var should_skip = false;
+	  var show_pattern = false;
+	  var skip_pattern_attr = this.skip_pattern
+	  if (skip_pattern_attr.startsWith("REDCAP:")) {
+	  	show_pattern = true;
+		skip_pattern_attr = skip_pattern_attr.replace(/^REDCAP:/g, '')
+	  }
+	  // support exactly one form of or
+      var skip_patterns = skip_pattern_attr.split('||');
+	  if (skip_patterns.length == 1) {
+	  	skip_patterns = skip_pattern_attr.split(' or ');
+	  }
+      for (i_pattern in skip_patterns) {
+        var skip_pattern = skip_patterns[i_pattern];
+        for (i = 0; i < operators.length; i++) {
+          var operator = operators[i];
+          var skip_pattern_elements = skip_pattern.split(operator.split);
+          if (skip_pattern_elements.length > 1) {
+            // If we found a matching expression type, find the control.
+            var control_id = skip_pattern_elements[0];
+            var control = category_controls_by_question_id[control_id];
+            if (typeof control != 'undefined' && control != null) {
+              var control_value = control.getSelectedValue();
+              var test_value = skip_pattern_elements[1]
+			  // Strip double quotes that are part of REDCaP skip patterns
+			  test_value = test_value.replace(/['"]+/g, '');
+              // Note that control value may be null.
+              should_skip = (operator.test).call(null, control_value, test_value)
+              // If something says we should skip this, break.
+              if (should_skip) {
+                break;
+              }
+            }
+          }
+        }
+        // If any pattern says we should skip, then we should skip.
+        if (should_skip) {
+          break;
+        }
+      }
+	  // Reverse conclusion for show patterns
+	  if (show_pattern) {
+	  	this.setSkipped(!should_skip);
+	  }
+	  else {
+	  	this.setSkipped(should_skip);
+	  }
+    }
+    this.setSkipped = function() {
+      throw "Override in derived class!";
+    }
+    // Utility methods
+    this.toggleImpedimentElement = function(should_show) {
+      var display_value = should_show ? "" : "none";
+      this.impediment_element.style.display = display_value;
+    }
+  }
+
+  CategoryControl.prototype = new ControlBase();
+  function CategoryControl(field_id) {
+    this.field_id = field_id;
+    this.question_element = null;
+    this.options_element = null;
+    this.impediment_element = null;
+    this.options_toggle_button = null;
+    this.input_elements = null;
+    this.options_hidden = false;
+    this.image_date_element = null;
+
+    // Find elements.
+    var label_selector = 'label[for=id_category-' + this.field_id + '-rating_0]';
+    var label_matches = $(label_selector);
+    this.question_element = label_matches[0].parentNode;
+    this.options_element = label_matches[1].parentNode.parentNode;
+    var impediment_selector = 'select#id_category-' + this.field_id + '-impediment';
+    var impediment_matches = $(impediment_selector);
+    this.impediment_element = impediment_matches[0].parentNode;
+    var input_elements_selector = 'input[name=category-' + this.field_id + '-rating]';
+    this.input_elements = $(input_elements_selector);
+    this.skip_pattern = this.input_elements[0].getAttribute('skip_pattern');
+    this.image_date_element = $('input[id=id_category-' + this.field_id + '-image_date]')[0];
+    var question_id = this.input_elements[0].getAttribute('question_id');
+    var skipped_options = $('input[question_id=' + question_id + '][value="-2"]');
+    if (skipped_options != null) {
+      // Expect only one skipped option, but being paranoid just in case.
+      skipped_options.each(function(index, element){element.parentNode.style.display="none";});
+    }
+
+    // Utility methods
+    this.toggleImpedimentElement = function(should_show) {
+      var display_value = should_show ? "" : "none";
+      this.impediment_element.style.display = display_value;
+    }
+    this.ensureToggleButton = function() {
+      if (this.options_toggle_button == null) {
+        this.options_toggle_button = document.createElement("button");
+        this.options_toggle_button.appendChild(document.createTextNode("+"));
+        this.options_toggle_button.onclick = function(control){ return function(event) { control.toggleOptionsElement(); return false; } }(this);
+        this.options_element.parentNode.insertBefore(this.options_toggle_button, this.options_element);
+        this.question_element.style.display='inline';
+        var spacer = document.createElement("br");
+        this.options_element.parentNode.insertBefore(spacer, this.options_element);
+      }
+    }
+    this.toggleAllElements = function(should_show) {
+      if (should_show) {
+        this.question_element.style.display = "inline";
+        if (this.options_hidden == false) {
+          this.options_element.style.display = "";
+        } else {
+          this.options_element.style.display = "none";
+        }
+        this.toggleImpedimentElement(this.getSelectedValue() == -1);
+        if (this.options_toggle_button != null) {
+          this.options_toggle_button.style.display = "";
+        }
+        this.input_elements.each(function(index, element) {
+          // never show the "skipped" element.
+          if (element.value != -2) {
+            element.style.display = "";
+          }
+        });
+        // Also show error list if one exists.
+        var possible_error = $(this.question_element).prev();
+        if (possible_error.is(".errorlist")) {
+          possible_error.css("display", "");
+        }
+      } else {
+        this.question_element.style.display = "none";
+        this.options_element.style.display = "none";
+        this.impediment_element.style.display = "none";
+        if (this.options_toggle_button != null) {
+          this.options_toggle_button.style.display = "none";
+        }
+        this.input_elements.each(function(index, element) {
+          element.style.display = "none";
+        });
+        // Also hide error list if one exists.
+        var possible_error = $(this.question_element).prev();
+        if (possible_error.is(".errorlist")) {
+          possible_error.css("display", "none");
+        }
+      }
+    }
+    this.toggleOptionsElement = function(should_show) {
+      // If called with no parameters, toggle back and forth.
+      if (typeof should_show == 'undefined' || should_show == null) {
+        should_show = this.options_hidden;
+      }
+      this.ensureToggleButton();
+      if (should_show) {
+        this.options_element.style.display = "";
+        while (this.options_toggle_button.hasChildNodes()) {
+          this.options_toggle_button.removeChild(this.options_toggle_button.firstChild);
+        }
+        this.options_toggle_button.appendChild(document.createTextNode("-"));
+        this.options_toggle_button.onclick = function(control){ return function(event) { control.toggleOptionsElement(); return false; } }(this);
+        if (this.getSelectedValue() == -1) {
+          this.toggleImpedimentElement(true);
+        }
+        this.question_element.style.color='black';
+        this.options_hidden = false;
+      } else {
+        this.options_element.style.display = "none";
+        while (this.options_toggle_button.hasChildNodes()) {
+          this.options_toggle_button.removeChild(this.options_toggle_button.firstChild);
+        }
+        this.options_toggle_button.appendChild(document.createTextNode("+"));
+        this.options_toggle_button.onclick = function(control){ return function(event) { control.toggleOptionsElement(); return false; } }(this);
+        if (this.getSelectedValue() == -1) {
+          this.toggleImpedimentElement(false);
+        }
+        this.question_element.style.color='green';
+        this.options_hidden = true;
+      }
+    }
+    this.getSelectedValue = function() {
+      var selected_value = null;
+      this.input_elements.each(function(index, element) {
+        if (element.checked == true) {
+          selected_value = parseInt(element.value);
+        }
+      });
+      return selected_value;
+    }
+    this.setSelectedValue = function(new_value) {
+      this.input_elements.each(function(index, element) {
+        if (element.value == new_value) {
+          element.checked = true;
+        } else {
+          element.checked = false;
+        }
+      });
+    }
+    this.clearSelectedValue = function(new_value) {
+      this.input_elements.each(function(index, element) {
+        element.checked = false;
+      });
+    }
+    this.setSkipped = function(should_skip) {
+      if (should_skip) {
+        this.setSelectedValue(-2);
+        this.toggleAllElements(false);
+      } else {
+        this.toggleAllElements(true);
+        // If the element was skipped, make sure we clear the skipped value and re-show the options.
+        if (this.getSelectedValue() == -2) {
+          this.clearSelectedValue();
+          if (this.options_hidden) {
+            this.toggleOptionsElement(true);
+          }
+        }
+      }
+    }
+    // Show impediment element as necessary.
+    this.toggleImpedimentElement(this.getSelectedValue() == -1);
+    this.input_elements.change(function(control) { return function(event) {
+      control.toggleImpedimentElement(control.getSelectedValue() == -1);
+      // If we've selected an option for this question, collapse the previous question.
+      hide_previous_control_options(control.field_id);
+      update_views_for_skip_patterns();
+      update_unfinished_category_control_count();
+    }}(this));
+    // Cancel keydown events to avoid changing selection when trying to affect streetview window.
+    this.input_elements.keydown(function(control){return false;})
+  };
+
+  function hide_previous_control_options(control_id) {
+    if (control_id > 0) {
+      var previous_control = category_controls[control_id - 1];
+      if (typeof(previous_control) != 'undefined' && previous_control != null && previous_control.getSelectedValue() != null) {
+        previous_control.toggleOptionsElement(false);
+      }
+    }
+  }
+  
+  function find_and_register_category_controls() {
+    var radio_category_manager = new FieldManager('category', 'rating_\\d+', function(element) {
+      return (element.checked == true);
+    });
+    $('input[type=radio]').each(function(index, element) {
+      var control_id = parseInt(radio_category_manager.find_field_id(element));
+      var question_id = element.getAttribute('question_id');
+      if (typeof(category_controls[control_id]) == 'undefined') {
+        var control = new CategoryControl(control_id);
+        category_controls[control_id] = control;
+        if (control.getSelectedValue() != null) {
+          hide_previous_control_options(control_id);
+        }
+        if (typeof question_id != 'undefined' && question_id != null && question_id != ''){
+          category_controls_by_question_id[question_id] = control;
+		  /* hack to support square brackets for redcap import */
+          category_controls_by_question_id['[' + question_id + ']'] = control;
+        }
+      }
+    });
+    update_unfinished_category_control_count();
+  }
+  
+  function update_unfinished_category_control_count() {
+    var unanswered_questions = 0;
+    for (index in category_controls) {
+      if (category_controls[index].getSelectedValue() == null) {
+        unanswered_questions++;
+      }
+    }
+    if (unanswered_questions > 0) {
+      $('#unanswered_questions').text(unanswered_questions + " categorical questions are still unanswered");
+    } else {
+      $('#unanswered_questions').text("");
+      $('#submit')[0].disabled = false;
+    }
+    
+  }
+  
+  CountControl.prototype = new ControlBase();
+  function CountControl(field_id) {
+    this.field_id = field_id;
+    this.question_element = null;
+    this.impediment_checkbox_element = null;
+    this.impediment_element = null;
+    this.image_date_element = null;
+
+    // Find elements.
+    var label_selector = 'label[for=id_count-' + this.field_id + '-rating]';
+    var label_matches = $(label_selector);
+    this.question_element = label_matches[0].parentNode;
+    var impediment_checkbox_selector = 'input#id_count-' + this.field_id + '-cannot_tell';
+    this.impediment_checkbox_jquery_result = $(impediment_checkbox_selector);
+    var impediment_selector = 'select#id_count-' + this.field_id + '-impediment';
+    var impediment_matches = $(impediment_selector);
+    this.impediment_element = impediment_matches[0].parentNode;
+    this.input_element = $('input#id_count-' + this.field_id + '-rating')[0]; 
+    this.skip_pattern = this.input_element.getAttribute('skip_pattern');
+    this.image_date_element = $('input[id=id_count-' + this.field_id + '-image_date]')[0];
+
+    // Utility methods
+    this.toggleImpedimentElement = function(should_show) {
+      var display_value = should_show ? "" : "none";
+      this.impediment_element.style.display = display_value;
+    }
+    this.getCannotTellValue = function() {
+      return this.impediment_checkbox_jquery_result[0].checked == true;
+    }
+    this.setValue = function(new_value) {
+      this.input_element.value = new_value;
+    }
+    this.getValue = function() {
+      return this.input_element.value;
+    }
+    this.toggleAllElements = function(should_show) {
+      if (should_show) {
+        this.question_element.style.display = "";
+        this.input_element.style.display = "";
+        this.impediment_checkbox_jquery_result[0].parentNode.style.display = "";
+        this.toggleImpedimentElement(this.getCannotTellValue());
+        // Also show error list if one exists.
+        var possible_error = $(this.question_element).prev();
+        if (possible_error.is(".errorlist")) {
+          possible_error.css("display", "");
+        }
+      } else {
+        this.question_element.style.display = "none";
+        this.toggleImpedimentElement(false);
+        this.impediment_checkbox_jquery_result[0].parentNode.style.display = "none";
+        this.input_element.style.display = "none";
+        // Also hide error list if one exists.
+        var possible_error = $(this.question_element).prev();
+        if (possible_error.is(".errorlist")) {
+          possible_error.css("display", "none");
+        }
+      }
+    }
+    this.setSkipped = function(should_skip) {
+      if (should_skip) {
+        this.setValue(-2);
+        this.toggleAllElements(false);
+      } else {
+        this.toggleAllElements(true);
+        // If the element was skipped, make sure we clear the skipped value and re-show the options.
+        if (this.getValue() == -2) {
+          this.setValue("");
+        }
+      }
+    }
+    // Show impediment element as necessary.
+    this.toggleImpedimentElement(this.getCannotTellValue());
+    var checkbox_callback = function(control) { return function(event) {
+      control.toggleImpedimentElement(control.getCannotTellValue());
+    }}(this);
+    this.impediment_checkbox_jquery_result.bind('click', checkbox_callback);
+  };
+    
+
+  function find_and_register_count_controls() {
+    var count_manager = new FieldManager('count', 'rating', function(element) {
+      return (element.checked == true);
+    });
+    $('input[type=text]').each(function(index, element) {
+      var control_id = parseInt(count_manager.find_field_id(element));
+      if (control_id >= 0 && typeof(count_controls[control_id]) == 'undefined') {
+        var control = new CountControl(control_id);
+        count_controls[control_id] = control;
+      }
+    });
+  }
+
+  TextControl.prototype = new ControlBase();
+  function TextControl(field_id) {
+    this.field_id = field_id;
+    this.question_element = null;
+    var label_selector = 'label[for=id_freeform-' + this.field_id + '-rating]';
+    var label_matches = $(label_selector);
+    this.question_element = label_matches[0].parentNode;
+    var impediment_checkbox_selector = 'input#id_freeform-' + this.field_id + '-cannot_tell';
+    this.impediment_checkbox_jquery_result = $(impediment_checkbox_selector);
+    var impediment_selector = 'select#id_freeform-' + this.field_id + '-impediment';
+    var impediment_matches = $(impediment_selector);
+    this.impediment_element = impediment_matches[0].parentNode;
+    this.textarea_element = $('textarea#id_freeform-' + this.field_id + '-rating')[0]; 
+    this.skip_pattern = this.textarea_element.getAttribute('skip_pattern');
+    this.image_date_element = $('input[id=id_freeform-' + this.field_id + '-image_date]')[0];
+    this.setSkipped = function(should_skip) {
+      if (should_skip) {
+        this.toggleAllElements(false);
+      } else {
+        this.toggleAllElements(true);
+      }
+    }
+    this.getCannotTellValue = function() {
+      return this.impediment_checkbox_jquery_result[0].checked == true;
+    }
+    this.toggleAllElements = function(should_show) {
+      if (should_show) {
+        this.question_element.style.display = "";
+        this.textarea_element.style.display = "";
+        this.impediment_checkbox_jquery_result[0].parentNode.style.display = "";
+        this.toggleImpedimentElement(this.getCannotTellValue());
+        // Also show error list if one exists.
+        var possible_error = $(this.question_element).prev();
+        if (possible_error.is(".errorlist")) {
+          possible_error.css("display", "");
+        }
+      } else {
+        this.question_element.style.display = "none";
+        this.toggleImpedimentElement(false);
+        this.impediment_checkbox_jquery_result[0].parentNode.style.display = "none";
+        this.textarea_element.style.display = "none";
+        // Also hide error list if one exists.
+        var possible_error = $(this.question_element).prev();
+        if (possible_error.is(".errorlist")) {
+          possible_error.css("display", "none");
+        }
+      }
+    }
+  }
+
+  function find_and_register_text_controls() {
+    var text_manager = new FieldManager('freeform', 'rating', function(element) {
+      return false;
+    });
+    $('textarea').each(function(index, element) {
+      var control_id = parseInt(text_manager.find_field_id(element));
+      if (control_id >= 0 && typeof(text_controls[control_id]) == 'undefined') {
+        var control = new TextControl(control_id);
+        text_controls[control_id] = control;
+      }
+    });
+  }
+
+
+  function update_views_for_skip_patterns() {
+    for (index in category_controls) {
+      category_controls[index].evalSkipPattern();
+    }
+    for (index in count_controls) {
+      count_controls[index].evalSkipPattern();
+    }
+    for (index in text_controls) {
+      text_controls[index].evalSkipPattern();
+    }
+  }
+
+  $(document).ready(function(){
+    find_and_register_category_controls();
+    find_and_register_count_controls();	
+    find_and_register_text_controls();
+    update_views_for_skip_patterns();
+    find_or_open_pano_window();
+  });
+  
+</script>
+  <a href="{% url ratestreets.views.viewtasksummary %}">Back to Task List</a>
+  <button onclick="find_or_open_pano_window()">Show Streetview window</button>
+<!--
+  <button onclick="find_or_open_pano_window_v2()">Show Streetview window using Google Maps V2 API</button>
+-->
+  <h3>Street to rate: {{task.segment}}</h3>
+  <h3>Rating Group:{{task.module}}</h3>
+  <div id="form" style="width:100%; height:200px;">
+    <form action="" method="post">
+      {% csrf_token %}
+      {% autoescape off %}
+        {% for formset in formsets %}
+          {{ formset.management_form }}
+          {% for form in formset.forms %}
+              {{ form.as_p }}
+          {% endfor %}
+        {% endfor %}
+        {{ render_time_form.as_p }}
+      {% endautoescape %}
+      <div id="unanswered_questions"></div>
+      <input id="submit" disabled="true" type="submit" value="Submit" />
+    </form>
+  </div>
+
+{% endblock %}

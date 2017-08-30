@@ -1,0 +1,127 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+  <script type="text/javascript"
+      src="http://maps.google.com/maps/api/js?v=3.4&sensor=false">
+  </script>
+  <script type="text/javascript">
+    lat_lng_segments = [
+      {% for segment in segments %}
+        {% if segment.start_lat %}
+          [ {{ segment.start_lat }},{{ segment.start_lng }}, {{ segment.end_lat }},{{ segment.end_lng }}, "{{ segment.street_address }}" ],
+        {% endif %}
+      {% endfor %}
+    ];
+    address_segments = [
+      {% for segment in segments %}
+        {% if segment.street_address and not segment.start_lat %}
+          '{{ segment.street_address }}',
+        {% endif %}
+      {% endfor %}
+    ];
+    function loadallsegments() {
+      if (lat_lng_segments.length > 0) {
+        loadonesegment(0, 'lat_long');
+      } else if (address_segments.length > 0) {
+        loadonesegment(0, 'street_address');
+      } else {
+        alert('No segments defined for this study!');
+      }
+    }
+    function loadonesegment(i, segment_type) {
+      document.getElementById('segment_list').style.display='none';
+      document.getElementById('pano_list').style.display='';
+      var elementid = 'pano_' + i;
+      var wrapper_div = document.createElement('div');
+      wrapper_div.style.height='220px';
+      wrapper_div.style.width='350px';
+      wrapper_div.style.border='1px solid black';
+      wrapper_div.style.cssFloat='left';
+      var header_div = document.createElement('div');
+      header_div.style.height='20px';
+      header_div.style.width='350px';
+      var segment_header = '';
+      if (segment_type == 'lat_long') {
+        if (lat_lng_segments[i][4] == '' || lat_lng_segments[i][4] == 'None') {
+          segment_header = '(' + lat_lng_segments[i][0] + ',' + lat_lng_segments[i][1] + ')->(' + lat_lng_segments[i][2] + ',' + lat_lng_segments[i][3] + ')';
+        } else {
+          segment_header = lat_lng_segments[i][4];
+        }
+      } else {
+        segment_header = address_segments[i];
+      }
+      header_div.appendChild(document.createTextNode(segment_header));
+      var inner_div = document.createElement('div');
+      inner_div.style.height='200px';
+      inner_div.style.width='350px';
+      inner_div.id = elementid;
+      wrapper_div.appendChild(header_div);
+      wrapper_div.appendChild(inner_div);
+      document.getElementById('pano_list').appendChild(wrapper_div);
+      inner_div.appendChild(document.createTextNode('No street view data found'));
+      var pano_element = document.getElementById(elementid);
+      if (segment_type == 'lat_long') {
+        g_streetview_service.initialize(lat_lng_segments[i][0], lat_lng_segments[i][1], lat_lng_segments[i][2], lat_lng_segments[i][3], pano_element);
+        if (i < lat_lng_segments.length-1) {
+          setTimeout(function(){loadonesegment(i+1, 'lat_long')}, 1000);
+        } else {
+          if (address_segments.length > 0) {
+            setTimeout(function(){loadonesegment(0, 'street_address')}, 1000);
+          }
+        }
+      } else {
+        g_streetview_service.initialize_for_addresses(address_segments[i], pano_element);
+        if (i < address_segments.length-1) {
+          setTimeout(function(){loadonesegment(i+1, 'street_address')}, 1000);
+        }
+      }
+    }
+  </script>
+  <button onclick="loadallsegments()">Load All Views</button>
+  <div id="segment_list">
+    <table>
+      <tr>
+        <th>
+          Segment
+        </th>
+        <th>
+          Completed By
+        </th>
+        <th>
+          Pending For
+        </th>
+        <th>
+          Actions
+        </th>
+      <tr>
+      {% for segment in segments %}
+        <tr>
+          <td>
+            <a href="#" onclick="g_streetview_service.open_pano_window('{% url ratestreets.views.pano segment_id=segment.id %}')"> 
+            {% if segment.street_address %}
+              {{ segment.street_address }}
+            {% else %}
+              {{ segment.start_lat }},{{ segment.start_lng }}
+            {% endif %}
+            </a>
+          </td>
+          <td>
+            {{ segment.completed_by }}
+          </td>
+          <td>
+            {{ segment.pending_for }}
+          </td>
+          <td>
+            <a href="{% url ratestreets.views.editsegment segment.id %}">Edit Segment</a>
+            <a href="{% url ratestreets.views.reassigntasks segment.id %}">Reassign Tasks</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <a onclick="confirm('Are you sure you want to reassign all pending tasks?')" 
+    href="{% url ratestreets.views.reassignpending study.id %}">Rebalance all pending tasks</a>
+  <div id="pano_list" style="width:100%;min-height:100%;display:none;">&nbsp;
+  </div>
+
+{% endblock %}

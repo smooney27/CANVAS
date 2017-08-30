@@ -1,0 +1,12 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+{% if item %}
+  <H1>{{item.name}}:{{item.description}}</H1>
+  {% autoescape off %}
+    {{help_text}}
+  {% endautoescape %}
+{% else %}
+  No help found for this item.
+{% endif %}
+{% endblock %}

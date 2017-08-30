@@ -1,0 +1,48 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+
+<h3>My Studies</h3>
+<table>
+  <tr>
+    <th>
+      Name
+    </th>
+    <th>
+      Completed
+    </th>
+    <th>
+      Total
+    </th>
+    <th>
+      Complete
+    </th>
+    <th>
+      Actions
+    </th>
+  </tr>
+  {% for study in studies %}
+    <tr>
+      <td>
+        {{ study.name }}
+      </td>
+      <td>
+        {{study.completed_tasks}}
+      </td>
+      <td>
+        {{study.total_tasks}}
+      </td>
+      <td>
+        {{study.percent_complete}}%
+      </td>
+      <td>
+        <a href="{% url ratestreets.views.editstudy study.id %}">Edit</a>
+        <a href="{% url ratestreets.views.export_data study.id %}">Export Data</a>
+        <a href="{% url ratestreets.views.studyresults study.id %}">Quick Results (Untested)</a>
+        <a href="{% url ratestreets.views.listsegments study.id %}">List Segments</a>
+        <a href="{% url ratestreets.views.importsegments study.id %}">Import Segments</a>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock %}

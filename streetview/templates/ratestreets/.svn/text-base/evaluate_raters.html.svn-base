@@ -1,0 +1,36 @@
+{% extends "logged_in.html" %}
+{% load ratestreets_filters %}
+
+{% block content %}
+
+<h1>Rater Evaluation</h1>
+<table>
+  <tr>
+    <th>Rater</th>
+    <th>Last Task Completed</th>
+    <th>Last Login Time</th>
+    <th colspan=2>Completed in Last 2 Weeks</th>
+    <th colspan=2>Overall Results</th>
+  </tr>
+  <tr>
+    <th colspan=3></th>
+    <th>Tasks</th>
+    <th>Segments</th>
+    <th>Tasks</th>
+    <th>Median Rating Time<br/>(Minutes:Seconds)</th>
+  </tr>
+  {% for rater in results %}
+    <tr>
+      <td>{{rater.username}}</td>
+      <td>{{rater.last_task|date:"D d M Y, H:i:s"|default:"No tasks completed"}}</td>
+      <td>{{rater.last_login|date:"D d M Y, H:i:s"}}</td>
+      <td>{{rater.tasks_completed|default:"0"}}</td>
+      <td>{{rater.segments_affected|default:"0"}}</td>
+      <td>{{rater.tasks_completed_ever|default:"0"}}</td>
+      <td>{{rater.median_rating_time|seconds_to_minutes|default:"None"}}</td>
+    </tr>
+  {% endfor %}
+</table>
+<p>Total Tasks Completed in Last 2 Weeks: {{total_tasks_completed}}</p>
+
+{% endblock %}

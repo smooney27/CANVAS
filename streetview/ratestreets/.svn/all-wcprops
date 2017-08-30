@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/ratestreets
+END
+admin.py
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/cu-streetview_streetviewsvn/!svn/ver/75/ratestreets/admin.py
+END
+validators.py
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/cu-streetview_streetviewsvn/!svn/ver/49/ratestreets/validators.py
+END
+views.py.bak
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/ratestreets/views.py.bak
+END
+viewutils.py
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/cu-streetview_streetviewsvn/!svn/ver/83/ratestreets/viewutils.py
+END
+views.py
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/cu-streetview_streetviewsvn/!svn/ver/83/ratestreets/views.py
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/cu-streetview_streetviewsvn/!svn/ver/1/ratestreets/__init__.py
+END
+utils.py
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/cu-streetview_streetviewsvn/!svn/ver/50/ratestreets/utils.py
+END
+tests.py
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/cu-streetview_streetviewsvn/!svn/ver/29/ratestreets/tests.py
+END
+models.py
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/cu-streetview_streetviewsvn/!svn/ver/82/ratestreets/models.py
+END
+forms.py
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/cu-streetview_streetviewsvn/!svn/ver/83/ratestreets/forms.py
+END
+widgets.py
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/cu-streetview_streetviewsvn/!svn/ver/19/ratestreets/widgets.py
+END

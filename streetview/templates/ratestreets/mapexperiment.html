@@ -1,0 +1,162 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+  <script type="text/javascript"
+      src="http://maps.google.com/maps/api/js?sensor=false">
+  </script>
+  <div>
+    City: <input id="city" type="text" value="Philadelphia, PA"/><button onclick="updateMap()">Go to City</button><br/>
+    Distance Between Grid Points (km): <input type="text" id="grid_density" value="1"/><br/>
+    Size of Grid (# of points/side):<input type="text" id="grid_size" value="20"/><br/>
+    <form name="mapForm">
+      Search on No Match:<input type="radio" name="search" value="none">No Search
+                         <input type="radio" name="search" value="50m">50m
+                         <input type="radio" name="search" value="100m" checked="true">100m
+                         <input type="radio" name="search" value="150m">150m
+                         <input type="radio" name="search" value="200m">200m<br/>
+    </form>
+    <button onclick="updateStreetviewData()">Redraw grid</button>
+  </div>
+  <div id="map" style="width:100%;height:100%;min-height:100%">&nbsp;</div>
+  <script type="text/javascript">
+    var green_icon = new google.maps.MarkerImage('{% url django.views.static.serve 'images/green_star.png' %}');
+    var red_icon = new google.maps.MarkerImage('{% url django.views.static.serve 'images/red_star.png' %}');
+    var yellow_icon = new google.maps.MarkerImage('{% url django.views.static.serve 'images/yellow_star.png' %}');
+    var geocoder = new google.maps.Geocoder();
+    var g_markers = [];
+    var g_map = null;
+
+    function updateMap(map) {
+      if (map == null) { map = g_map; }
+      var city = document.getElementById("city").value;
+      geocoder.geocode( { 'address': city}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          map.setCenter(results[0].geometry.location);
+// auto-computed bounds are too big for our purposes.
+//          map.fitBounds(results[0].geometry.viewport);
+          updateStreetviewData(map);
+        }
+      });
+    }
+
+    function initialize() {
+      var mapElement = document.getElementById("map");
+      var mapOptions = {
+          center: new google.maps.LatLng(40.724885, -74.007454),
+          zoom: 13,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          disableDefaultUI: false,
+          streetViewControl: true,
+          mapTypeControl:false,
+          zoomControl:true,
+        };
+      var map = new google.maps.Map(mapElement, mapOptions);
+//      google.maps.event.addListener(map, 'zoom_changed', function() {
+//        setTimeout(function(map){return function(){updateStreetviewData(map)}}(map), 1000);
+//      });
+//      google.maps.event.addListener(map, 'center_changed', function() {
+//        setTimeout(function(map){return function(){updateStreetviewData(map)}}(map), 1000);
+//      });
+      g_map = map;
+      updateMap(map)
+    }
+    
+    function KmToDegrees(distance, current_lat) {
+      var circumference = 40075
+      if (current_lat != null) {
+        var circumference = circumference*Math.cos(current_lat*(2*Math.PI/360));
+      } 
+      var degrees = distance*360/circumference; 
+      return degrees;
+    }
+    
+    function findSelectedRadioButtonValue(form_element) {
+      if (!form_element) { return ""; }
+      var button_count = form_element.length;
+      if (button_count == undefined) {
+        if (form_element.checked) {
+          return form_element.value;
+        } else {
+          return "";
+        }
+      }
+      for (var i = 0; i < button_count; i++) {
+        if (form_element[i].checked) {
+          return form_element[i].value;
+        }
+      }
+      return "";
+    }
+    
+    function updateStreetviewData(map, viewport) {
+      if (typeof(map) == 'undefined') { map = g_map; }
+      while (g_markers.length > 0) {
+        var marker = g_markers.pop();
+        marker.setMap(null);
+      }
+      var center = map.getCenter();
+      var grid_density = document.getElementById("grid_density").value;
+      var grid_size = document.getElementById("grid_size").value;
+      var lat_degrees = KmToDegrees(grid_density, null);
+      var lng_degrees = KmToDegrees(grid_density, center.lat());
+      var search = findSelectedRadioButtonValue(document.mapForm.search);
+      for (var lat = center.lat() - (lat_degrees*grid_size/2); lat < center.lat() + (lat_degrees*grid_size/2); lat=lat+lat_degrees) {
+        for (var lng = center.lng() - (lng_degrees*grid_size/2); lng < center.lng() + (lng_degrees*grid_size/2); lng=lng+lng_degrees) {
+          findPanoramaForLocation(lat, lng, map, search, null);
+        }
+      }
+    }
+
+
+    function findPanoramaForLocation(lat, lng, map, search, root_marker) {
+      var location = new google.maps.LatLng(lat, lng);
+      var sv = new google.maps.StreetViewService();
+      var location_callback = (function(root_marker){ 
+        return function(data, status){
+          var marker = new google.maps.Marker({
+            position: location
+          });
+          if (status == "ZERO_RESULTS") {
+            marker.icon = red_icon;
+            if (search != 'none' && search != '') {
+              var lat_degrees = 0
+              var lng_degrees = 0
+              if (search == '50m') {
+                lat_degrees = KmToDegrees(.05, null);
+                lng_degrees = KmToDegrees(.05, location.lat());
+              } else if (search == '100m') {
+                lat_degrees = KmToDegrees(.1, null);
+                lng_degrees = KmToDegrees(.1, location.lat());
+              } else if (search = '150m') {
+                lat_degrees = KmToDegrees(.15, null);
+                lng_degrees = KmToDegrees(.15, location.lat());
+              } else if (search = '200m') {
+                lat_degrees = KmToDegrees(.2, null);
+                lng_degrees = KmToDegrees(.2, location.lat());
+              }
+              
+              findPanoramaForLocation(lat + lat_degrees, lng, map, 'none', marker);
+              findPanoramaForLocation(lat - lat_degrees, lng, map, 'none', marker);
+              findPanoramaForLocation(lat, lng + lng_degrees, map, 'none', marker);
+              findPanoramaForLocation(lat, lng - lng_degrees, map, 'none', marker);
+            }
+          } else {
+            if (root_marker != null && typeof(root_marker) != 'undefined') {
+              marker.icon = yellow_icon;
+              root_marker.icon = null;
+              root_marker.setMap(null);
+            }
+            else {
+              marker.icon = green_icon;
+            }
+          }
+          marker.setMap(map);
+          g_markers.push(marker);
+        }
+      })(root_marker);
+      var panorama = sv.getPanoramaByLocation(location, 50, location_callback);
+    }
+    
+    initialize();
+  </script>
+{% endblock %}

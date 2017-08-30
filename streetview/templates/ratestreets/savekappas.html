@@ -1,0 +1,11 @@
+{% extends "not_logged_in.html" %}
+
+{% block content %}
+
+Saved kappas for
+<UL>
+{% for study in studies %}
+  <LI>{{ study.description }} </LI>
+{% endfor %}
+
+{% endblock %}

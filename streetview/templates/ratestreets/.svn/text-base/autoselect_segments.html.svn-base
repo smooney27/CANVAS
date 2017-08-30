@@ -1,0 +1,460 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+  <script type="text/javascript"
+      src="http://maps.google.com/maps/api/js?key=AIzaSyDlHAUusZNHMySxy8ZwGG1mkstCjJm2tRE&libraries=geometry&sensor=false">
+  </script>
+  <script type="text/javascript">
+    var green_icon = new google.maps.MarkerImage('http://www.google.com/intl/en_us/mapfiles/ms/micons/green-dot.png');
+    var streetview_items = new Array();
+    var streetview_item_count = 0;
+    var search_managers = new Array();
+    var found_segment_list = new Array();
+    var found_segment_map = null;
+    var found_segment_map_options = {
+      zoom: 14,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    }
+    var found_segment_bounds = new google.maps.LatLngBounds();
+    var failure_map = new Array();
+    var failure_count = 0;
+    var g_sv = new google.maps.StreetViewService();
+    var debug = false;
+    var debug_text = null;
+    var debug_map_element=null;
+    var debug_map = null;
+    dumpSearchInfo = function(location) {
+      var location_text="searching at (" + location.lat() + "," + location.lng() + ")<br/>";
+      if (debug_text == null) { 
+        debug_text = $("<div></div>");
+        debug_text.insertBefore($('#the_form'));
+      }
+      debug_text.append(location_text);
+      if (debug_map_element == null || debug_map == null) {
+        debug_map_element = $("<div></div>");
+        debug_map_element.css('height', 300);
+        debug_map_element.css('width', 400);
+        debug_map_element.insertBefore($('#the_form'));
+        var debug_map_options = {
+          zoom: 7,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        }
+        debug_map = new google.maps.Map(debug_map_element[0], debug_map_options);
+      }
+      var marker = new google.maps.Marker({
+        position: location,
+        map: debug_map,
+        title: "Time: " + new Date().getTime()
+      });
+      debug_map.setCenter(location);
+    }
+
+    function StreetviewLocationAutoselector(settings) {
+      this.attempts = 0;
+      this.attempts_input = (typeof(settings.attempts_input) == 'undefined') ? null : settings.attempts_input;
+      this.lat_input = (typeof(settings.lat_input) == 'undefined') ? null : settings.lat_input;
+      this.lng_input = (typeof(settings.lng_input) == 'undefined') ? null : settings.lng_input;
+      this.address_input = (typeof(settings.address_input) == 'undefined') ? null : settings.address_input;
+      this.last_requested_location = new google.maps.LatLng(settings.lat, settings.lng);
+      this.last_returned_location = null;
+      this.requested_distance = .005;
+      this.pano_element = (typeof(settings.pano_element) == 'undefined') ? null : settings.pano_element;
+      this.manager = settings.manager;
+      this.label = settings.label;
+      this.first_location = this.last_requested_location;
+      this.first_hit = true;
+      this.highway_regex = new RegExp("(Interstate [\dNS]+|[A-z\w]+ Expressway|[A-z\s]+ Parkway|[A-z\s]+ Highway)", "i");
+      this.RefreshAttemptsInputValue = function() {
+        this.attempts_input.value = this.attempts;
+      }
+      this.SearchAtLocation = function(location, last_heading, move_if_possible) {
+        if (debug) { dumpSearchInfo(location); }
+        var location_callback = function(autoselector, last_heading) { 
+          return function(data, status) {
+            autoselector.attempts++;
+            autoselector.RefreshAttemptsInputValue();
+            if (autoselector.attempts > 500) {
+              // Block runaway loops
+              autoselector.manager.recordFailure(autoselector.first_location);
+            }
+            if (status == "ZERO_RESULTS" || data == null || autoselector.IsResultHighway(data)) {
+              // Search up to five times for initial hits.  
+              // For now, we're looking 125 meters from intial point.  It might be that we should look 
+              // up to <MAX> meters instead of *always* MAX meters, and that MAX should be dynamic by
+              // sampling density.  For now, hardcoding 125 is a simplification. 
+              if (autoselector.last_returned_location == null && 
+                  autoselector.attempts < 5) {
+                var new_heading = Math.floor(Math.random()*360);
+                var new_location = find_next_location_for_link(autoselector.first_location, new_heading, .125);
+                // Preserve move-if-possible from last search.
+                autoselector.SearchAtLocation(new_location, last_heading, move_if_possible);
+              } else {
+                // Give up.
+                autoselector.manager.recordFailure(autoselector.first_location);
+              }
+            } else {
+
+              // If we're trying to find an end point or if we just started and can go anywhere, seach for best heading.
+              if (data.links.length == 2 || (move_if_possible && data.links.length > 0)) {
+                if (autoselector.first_hit) {
+                  // If this is the first hit, tell the manager where we hit first.
+                  autoselector.manager.setMarker(data.location.latLng, "FirstHit");
+                  if (autoselector.address_input != null) {
+                    autoselector.address_input.value = data.location.description;
+                  }
+                  // Record that we've had at least one hit.
+                  autoselector.first_hit = false;
+                }
+                // Best heading: if null or -1, then this is the first search.  Null = take first.  -1 = take last.
+                var best_heading = -1;
+                if (last_heading == null) {
+                  best_heading = 0;
+                } else if (last_heading == -1) {
+                  best_heading = data.links.length - 1 ;
+                } else {
+                  // Try to move
+                  var heading_diffs = new Array();
+                  for (i = 0; i < data.links.length; i++) {
+                    var heading = data.links[i].heading;
+                    var heading_diff = (heading - last_heading) % 360;
+                    if (heading_diff < -180) { heading_diff = heading_diff + 360; }
+                    if (heading_diff > 180) { heading_diff = heading_diff - 360; }
+                    heading_diffs[i] = Math.abs(heading_diff);
+                  }
+                  // Okay, we have heading diffs.  Now find the smallest.
+                  var min_diff = 360;
+                  for (i = 0; i < heading_diffs.length; i++) {
+                    if (heading_diffs[i] < min_diff) { 
+                      best_heading = i; 
+                      min_diff = heading_diffs[i];
+                    }
+                  }
+                }
+                // When not in move-if-possible mode, consider a turn > 60 degrees to be end-of-segment.
+                if (!move_if_possible && min_diff > 60) {
+                  best_heading = -1;
+                }
+                if (best_heading >= 0) {
+                  // So we're going to move.  Make sure we move a good distance.
+                  if (autoselector.last_returned_location != null && 
+                      data.location.latLng.lat() == autoselector.last_returned_location.lat() && 
+                      data.location.latLng.lng() == autoselector.last_returned_location.lng() && 
+                      autoselector.requested_distance < .04) {
+                    // last move didn't move us far enough.  double the requested distance.
+                    autoselector.requested_distance = autoselector.requested_distance * 2;
+                  } else {
+                    // Reset requested distance if we did move last time.
+                    autoselector.requested_distance = .01;
+                  }
+                  var new_location = find_next_location_for_link(data.location.latLng, data.links[best_heading].heading, autoselector.requested_distance);
+                  var distance_to_new_location = google.maps.geometry.spherical.computeDistanceBetween(autoselector.first_location, new_location)
+                  if (distance_to_new_location > 500) {
+                    // We're getting > 500 meters from the start point.  Stop here.
+                    autoselector.SetLocation(location, data.location.pano);
+                  } else {
+                    // Move-if-possible changes to false once we've found a hit.
+                    autoselector.SearchAtLocation(new_location, data.links[best_heading].heading, false);
+                  }
+                } else {
+                  // Okay, stop here.
+                  autoselector.SetLocation(data.location.latLng, data.location.pano);
+                }
+                // Last, record last returned location for the next pass.
+                autoselector.last_returned_location = data.location.latLng;
+              }
+              else if (data.links.length > 0) {
+                // One or three or more links.  Either a dead-end or an intersection.  Either way, end 
+                // of segment.  Stop, noting if first hit.
+                if (autoselector.first_hit) {
+                  // If this is the first hit, tell the manager where we hit first.
+                  autoselector.manager.setMarker(data.location.latLng, "FirstHit");
+                  if (autoselector.address_input != null) {
+                    autoselector.address_input.value = data.location.description;
+                  }
+                  autoselector.first_hit = false;
+                }
+                autoselector.SetLocation(data.location.latLng, data.location.pano);
+              } else {
+                autoselector.manager.recordFailure(autoselector.first_location);
+              }
+            } 
+          } 
+        } (this, last_heading);
+        this.last_requested_location = location;
+        // todo$ - it looks like the API may have changed such that we can request >50 meter
+        // radius and we'll just get a panorama rather than the closest.  Should we do that instead
+        // of repeated search?  Depending on how the panorama is chosen, this could introduce bias.
+        g_sv.getPanoramaByLocation(location, 50, location_callback);
+      }
+      this.SetLocation = function(location, panoId) {
+        this.lat_input.value = location.lat();
+        this.lng_input.value = location.lng();
+        this.manager.setMarker(location, this.label);
+        var panoramaOptions = {
+            position: new google.maps.LatLng(this.lat_input.value, this.lng_input.value)
+        };
+        if (this.pano_element) {
+          var pano = new google.maps.StreetViewPanorama(this.pano_element, panoramaOptions);
+          pano.setPano(panoId);
+        }
+      }
+      this.IsResultHighway = function(data) {
+//    Needs more testing before being turned on.
+//        return (this.highway_regex.test(data.location.description));
+        return false;
+      }
+      this.manager.setMarker(this.first_location, "Initial");
+      this.SearchAtLocation(this.first_location, settings.start_heading, settings.move_if_possible);
+    }
+    
+    function SearchManager(search_settings) {
+      this.search_location = new google.maps.LatLng(search_settings.segment.lat, search_settings.segment.lng);
+      this.first_hit_location = null;
+      this.start_location = null;
+      this.end_location = null;
+      this.added_to_found_list = false;
+      this.wrapper_id = search_settings.wrapper_id;
+      this.setMarker = function(location, label) {
+        if (label=='Start') { 
+          this.start_location = location;
+          // If this is the start location being set, kick off the search for the end location.
+          var end_heading = -1;
+          // Okay, now that we have a heading direction, kick off the end point selector.
+          this.end_location_selector = new StreetviewLocationAutoselector({lat: this.first_hit_location.lat(),
+                                                                      lat_input: search_settings.end_lat_input, 
+                                                                      lng: this.first_hit_location.lng(),
+                                                                      lng_input: search_settings.end_lng_input, 
+                                                                      attempts_input: search_settings.end_attempts_input,
+                                                                      address_input: search_settings.address_input,
+                                                                      start_heading: end_heading,
+                                                                      move_if_possible: true,
+                                                                      manager: function(manager) { return new function() { return manager; }} (this),
+                                                                      label: 'End'
+                                                                      });
+        }
+        else if (label=='End') { this.end_location = location; }
+        else if (label=='FirstHit') { 
+          // Record the first hit, so we can search the other way for an end location
+          this.first_hit_location = location; 
+        }
+        // Ignoring Initial for now.
+        if (this.start_location && this.end_location && !this.added_to_found_list) {
+          found_segment_list.push({start:this.start_location, end:this.end_location, mapped:false});
+          $('#found_items').text('found ' + found_segment_list.length + ' segments');
+          this.added_to_found_list = true;
+          this.searchComplete();
+        }
+      }
+      this.recordFailure = function(location) {
+        var location_key = "(" + location.lat() + "," + location.lng() + ")";
+        if (typeof(failure_map[location_key]) == 'undefined') {
+          failure_map[location_key] = {location: location, mapped:false};
+          failure_count++;
+          $('#failure_items').text('unable to find segments for ' + failure_count + ' points');
+        }
+        this.searchComplete();
+      }
+      this.searchComplete = function() {
+        // Clean up references to selectors and self.
+        this.end_location_selector = null;
+        this.start_location_selector = null;
+        search_managers.splice( $.inArray(this, search_managers), 1 );
+        $('#'+this.wrapper_id).hide();
+        // Last, start next search.
+        setTimeout(loadnextsegment, 500);
+      }
+      $('#'+this.wrapper_id).show();
+      // Start heading of null tells the autoselector to take the first heading google offers.
+      var start_heading = null;
+      this.start_location_selector = new StreetviewLocationAutoselector({lat: search_settings.segment.lat,
+                                                                        lat_input: search_settings.start_lat_input, 
+                                                                        lng: search_settings.segment.lng,
+                                                                        lng_input: search_settings.start_lng_input, 
+                                                                        attempts_input: search_settings.start_attempts_input,
+                                                                        start_heading: start_heading,
+                                                                        move_if_possible: false,
+                                                                        manager: function(manager) { return new function() { return manager; }} (this),
+                                                                        label: 'Start'
+                                                                        });
+    }
+    
+    function km_to_degrees(distance, current_lat) {
+      var circumference = 40075
+      if (current_lat != null) {
+        var circumference = circumference*Math.cos(current_lat*(2*Math.PI/360));
+      } 
+      var degrees = distance*360/circumference; 
+      return degrees;
+    }
+    
+    function find_next_location_for_link(current_location, heading, distance) {
+      var current_lat = current_location.lat();
+      var current_lng = current_location.lng();
+      var hypot_meters = distance;
+      var heading_radians = (((90-heading)%360)/360)*Math.PI*2;
+      var lat_change_degrees = Math.sin(heading_radians)*km_to_degrees(hypot_meters, null);
+      var lng_change_degrees = Math.cos(heading_radians)*km_to_degrees(hypot_meters, current_lat);
+      var new_lat = current_lat + lat_change_degrees;
+      var new_lng = current_lng + lng_change_degrees;
+      return new google.maps.LatLng(new_lat, new_lng);
+    }
+    
+    function add_to_queue(item, segment_info, wrapper_id) {
+      $('#'+wrapper_id).hide();
+      streetview_items.push({id:item, segment:segment_info, wrapper_id:wrapper_id});
+      streetview_item_count++;
+      $('#search_items').text('searching for ' + streetview_item_count + ' segments');
+    }
+    function loadnextsegment() {
+      if ((found_segment_list.length + failure_count) % 20 == 0) {
+        update_found_segment_map();
+      } 
+      var segment_item = streetview_items.shift();
+      if (segment_item != null) {
+        load_segment_from_segment_info(segment_item.id, segment_item.segment, segment_item.wrapper_id);
+      } else if (found_segment_list.length > 0) {
+        update_found_segment_map();
+      } else {
+        setTimeout(loadnextsegment, 1000);
+      }
+    }
+    function update_found_segment_map() {
+      for (found_segment_i in found_segment_list) {
+        var segment = found_segment_list[found_segment_i];
+        if (segment.mapped == false) {
+          var path = [segment.start, segment.end]
+          var segmentPath = new google.maps.Polyline({
+            path:path,
+            strokeColor: "#00FF00",
+            strokeOpacity: 1.0,
+            strokeWeight: 3
+          });
+          segmentPath.setMap(found_segment_map);
+          found_segment_bounds.extend(segment.start);
+          found_segment_bounds.extend(segment.end);
+          segment.mapped = true;
+        }
+      }
+      for (failure_i in failure_map) {
+        var failure_location = failure_map[failure_i];
+        if (failure_location.mapped == false) {
+          var x11 = new google.maps.LatLng(failure_location.location.lat() - .001, failure_location.location.lng() - .001);
+          var x12 = new google.maps.LatLng(failure_location.location.lat() + .001, failure_location.location.lng() + .001);
+          var x21 = new google.maps.LatLng(failure_location.location.lat() + .001, failure_location.location.lng() - .001);
+          var x22 = new google.maps.LatLng(failure_location.location.lat() - .001, failure_location.location.lng() + .001);
+          var path1 = [x11, x12];
+          var segmentPath1 = new google.maps.Polyline({
+            path:path1,
+            strokeColor: "#FF0000",
+            strokeOpacity: 1.0,
+            strokeWeight: 3
+          });
+          segmentPath1.setMap(found_segment_map);
+          var path2 = [x21, x22];
+          var segmentPath2 = new google.maps.Polyline({
+            path:path2,
+            strokeColor: "#FF0000",
+            strokeOpacity: 1.0,
+            strokeWeight: 3
+          });
+          segmentPath2.setMap(found_segment_map);
+          found_segment_bounds.extend(failure_location.location);
+          failure_location.mapped = true;
+        }
+      }
+      found_segment_map.fitBounds(found_segment_bounds);
+    }
+    function select_found_segments() {
+      for (i = 0; i < streetview_item_count; i++) {
+        var end_lng_input = $('input[name=form-' + i + '-end_lng]')[0];
+        if (end_lng_input.value != '') {
+          var checkbox = $('input[name=form-' + i + '-should_save]')[0];
+          checkbox.checked = true;
+        }
+      }
+    }
+    function load_segment_from_segment_info(id, segment, wrapper_id) {
+      var search_settings = {};
+      search_settings.address_input = $('input[name=' + id + '-street_address]')[0];
+      search_settings.start_lat_input = $('input[name=' + id + '-start_lat]')[0];
+      search_settings.start_lng_input = $('input[name=' + id + '-start_lng]')[0];
+      search_settings.start_attempts_input = $('input[name=' + id + '-start_attempts]')[0];
+      search_settings.end_lat_input = $('input[name=' + id + '-end_lat]')[0];
+      search_settings.end_lng_input = $('input[name=' + id + '-end_lng]')[0];
+      search_settings.end_attempts_input = $('input[name=' + id + '-end_attempts]')[0];
+      search_settings.auto_id = id;
+      search_settings.segment = segment;
+      search_settings.wrapper_id = wrapper_id;
+      var search_manager = new SearchManager(search_settings);
+      search_managers.push(search_manager);
+    }
+    function updateMarker(marker, position) {
+      marker.setPosition(position);
+    }
+    function createmapforsegment(start_lat, start_lng, end_lat, end_lng, element) {
+      var mapOptions = {
+        center: new google.maps.LatLng(start_lat, start_lng),
+        zoom: 15,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        disableDefaultUI: false,
+        streetViewControl: true,
+        mapTypeControl:false,
+        zoomControl:true,
+      };
+      return new google.maps.Map(element, mapOptions);
+    }
+    $(document).ready(function(){
+      found_segment_map = new google.maps.Map($('#found_segment_map')[0], found_segment_map_options);
+      loadnextsegment();
+    });
+  </script>
+  <div id="search_items"></div>
+  <div id="found_items"></div>
+  <div id="failure_items"></div>
+  <button onclick="update_found_segment_map()">Show Segments Found So Far</button>
+  <button onclick="select_found_segments()">Select Found Segments</button>
+  <button onclick="document.getElementById('the_form').submit()">Commit Selected Segments</button>
+  <div id="found_segment_map" style="width:800px; height:600px"></div>
+  <form id="the_form" action="{{ confirm_url }}" method="post">
+    {% csrf_token %}
+    {% autoescape off %}
+        {{ segment_autoselect_formset.management_form }}
+        {% for form in segment_autoselect_formset.forms %}
+          <div id="{{ form.item_id }}-wrapper">
+            {{ form.non_field_errors }}
+            {{ form.render_heading }}
+            {{ form.render_script }}
+            <table>
+              <tr>
+                {% for field in form %}
+                  {% if field.is_hidden %}
+                    <td>
+                    </td>
+                  {% else %}
+                    <td>
+                      {{ field.errors }}
+                    </td>
+                  {% endif %}
+                {% endfor %}
+              </tr>
+              <tr>
+                {% for field in form %}
+                  {% if field.is_hidden %}
+                    <td>
+                      {{ field }}
+                    </td>
+                  {% else %}
+                    <td>
+                      {{ field.label_tag }}:{{ field }}
+                    </td>
+                  {% endif %}
+                {% endfor %}
+              </tr>
+            </table>
+            <hr/>
+          </div>
+        {% endfor %}
+    {% endautoescape %}
+    <input type="submit" value="Select" />
+  </form>
+{% endblock %}

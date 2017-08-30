@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/cu-streetview_streetviewsvn/!svn/ver/5/migrations
+END
+add_one_side_only_to_items.sql
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/cu-streetview_streetviewsvn/!svn/ver/29/migrations/add_one_side_only_to_items.sql
+END
+add_kappa_stats.sql
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/cu-streetview_streetviewsvn/!svn/ver/6/migrations/add_kappa_stats.sql
+END
+add_sample_point.sql
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/cu-streetview_streetviewsvn/!svn/ver/78/migrations/add_sample_point.sql
+END
+add_help_text.sql
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/cu-streetview_streetviewsvn/!svn/ver/5/migrations/add_help_text.sql
+END
+add_revision_to_item.sql
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/cu-streetview_streetviewsvn/!svn/ver/17/migrations/add_revision_to_item.sql
+END
+add_allocation_strategy_to_study.sql
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/cu-streetview_streetviewsvn/!svn/ver/57/migrations/add_allocation_strategy_to_study.sql
+END
+add_elapsed_time_to_ratings.sql
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/cu-streetview_streetviewsvn/!svn/ver/7/migrations/add_elapsed_time_to_ratings.sql
+END
+add_revision_to_module.sql
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/cu-streetview_streetviewsvn/!svn/ver/17/migrations/add_revision_to_module.sql
+END
+add_image_date_to_ratings.sql
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/cu-streetview_streetviewsvn/!svn/ver/46/migrations/add_image_date_to_ratings.sql
+END

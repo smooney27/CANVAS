@@ -1,0 +1,16 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+
+<h3>New {{item_type}}</h3>
+<div id="form">
+  <form enctype="multipart/form-data" action="" method="post">
+    {% csrf_token %}
+    {% autoescape off %}
+      {{ form.as_p }}
+    {% endautoescape %}
+    <input type="submit" value="Create" />
+  </form>
+</div>
+
+{% endblock %}

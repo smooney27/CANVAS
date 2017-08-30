@@ -1,0 +1,33 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+
+<h3>Modules</h3>
+<table>
+  <tr>
+    <th>
+      Name
+    </th>
+    <th>
+      # of Questions
+    </th>
+    <th>
+      Actions
+    </th>
+  </tr>
+  {% for module in modules %}
+    <tr>
+      <td>
+        {{module.description}}
+      </td>
+      <td>
+        {{module.items.count}}
+      </td>
+      <td>
+        <a href="{% url ratestreets.views.editmodule module.id %}">Edit</a>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

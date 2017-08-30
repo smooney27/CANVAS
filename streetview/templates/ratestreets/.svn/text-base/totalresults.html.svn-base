@@ -1,0 +1,44 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+
+<h3>Results for all completed studies</h3>
+<p>Including the following studies</p>
+<ul>
+  {% for study in studies %}
+    <li>{{study.name}}</li>
+  {% endfor %}
+</ul>
+<table>
+  <tr>
+    <th>
+      Item
+    </th>
+    <th>
+      Fleiss' Kappa
+    </th>
+    <th>
+      Percent Agreement
+    </th>
+    <th>
+      # of ratings used
+    </th>
+  </tr>
+  {% for result in results %}
+    <tr>
+      <td>
+        {{result.item}}
+      </td>
+      <td>
+        {{result.kappa}}
+      </td>
+      <td>
+        {{result.percent_agreement}}
+      </td>
+      <td>
+        {{result.kappa_rating_count}}
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock %}

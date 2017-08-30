@@ -1,0 +1,28 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+
+<table border='1'>
+  <tr>
+    <td>Username</td>
+    <td>{{user.username}}</td>
+  </tr>
+  <tr>
+    <td>First Name</td>
+    <td>{{user.first_name}}</td>
+  </tr>
+  <tr>
+    <td>Last Name</td>
+    <td>{{user.last_name}}</td>
+  </tr>
+  <tr>
+    <td>Email</td>
+    <td>{{user.email}}</td>
+  </tr>
+  <tr>
+    <td>Password</td>
+    <td>{{password}}</td>
+  </tr>
+</table>
+<a href='{% url ratestreets.views.viewadmintasks %}'>Back to Main Menu</a>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+  <script type="text/javascript"
+      src="http://maps.google.com/maps/api/js?key=AIzaSyDlHAUusZNHMySxy8ZwGG1mkstCjJm2tRE&libraries=geometry&sensor=false">
+  </script>
+  <table>
+    {% for item in items %}
+      <tr>
+        <td>
+          <a href="{% url ratestreets.views.showquickmap study_id=study.id item_id=item.id %}"> 
+            {{item.name}}:{{item.description}}
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

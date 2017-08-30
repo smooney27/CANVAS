@@ -1,0 +1,47 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+
+<script>
+    function toggle_show_completed_tasks(should_show) {
+        var display = should_show ? "" : "none";
+        $('li.completed').each(function(index, element) {
+            element.style.display = display;
+        });
+    }
+    $(document).ready(function(){
+      if ($('#hide')[0].checked) {
+          toggle_show_completed_tasks(false);
+      }
+      $('#hide').change(function(event) {
+          if (event.currentTarget.checked) {
+              toggle_show_completed_tasks(false);
+          } else {
+              toggle_show_completed_tasks(true);
+          }
+      });
+      var completed = $('li.completed').size();
+      var total = $('li').size();
+      if (total > 0) {
+        var percent_complete = Math.round((completed * 10000)/total)/100;
+        $('#percent_complete').text('You are ' + percent_complete + '% done');
+      }
+    });
+  
+</script>
+<div style="float:right;">
+  <div id="percent_complete"></div>
+  <input id="hide" type="checkbox"/> Hide Completed Tasks
+</div>
+<h3>Task list</h3>
+{% for task in tasks %}
+<ul>
+  <li class="{% if task.completed_at != None %}completed{% endif %}">
+    <a href="{% url ratestreets.views.ratestreet task.id %}" onclick="window.open('{% url ratestreets.views.pano task_id=task.id %}', 'pano_window', 'location=0,width=800,height=800');">{{ task.segment }}--{{ task.module }}</a>
+    {% if task.completed_at != None %}
+      Completed at: {{ task.completed_at }}
+    {% endif %}
+  </li>
+</ul>
+{% endfor %}
+{% endblock %}

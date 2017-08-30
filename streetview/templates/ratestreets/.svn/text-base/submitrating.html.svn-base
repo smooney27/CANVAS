@@ -1,0 +1,7 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+
+Created {{ rating_count }} new ratings!
+
+{% endblock %}

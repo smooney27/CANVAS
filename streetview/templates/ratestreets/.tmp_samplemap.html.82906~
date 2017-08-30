@@ -1,0 +1,137 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+  <script type="text/javascript"
+      src="http://maps.google.com/maps/api/js?key=AIzaSyDlHAUusZNHMySxy8ZwGG1mkstCjJm2tRE&libraries=geometry&sensor=false">
+  </script>
+  <script type="text/javascript">
+    var segment_map = null;
+    var segment_bounds = new google.maps.LatLngBounds();
+    var segment_map_options = {
+      zoom: 14,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    }
+    var segments = {
+      {% for segment in segments %}
+        {% if segment.start_lat %}
+          "{{ segment.sample_point.id }}":
+          { 
+            start_lat:{{ segment.start_lat }}, 
+            start_lng:{{ segment.start_lng }}, 
+            end_lat:{{ segment.end_lat }},
+            end_lng:{{ segment.end_lng }}, 
+          },
+        {% endif %}
+      {% endfor %}
+    };
+    var sample_points = {
+      {% for sample_point in sample_points %}
+        {% if sample_point.lat %}
+          "{{ sample_point.id }}":
+          { 
+            lat:{{ sample_point.lat }}, 
+            lng:{{ sample_point.lng }}, 
+          },
+        {% endif %}
+      {% endfor %}
+    };
+    function map_segments() {
+      for (segment_i in segments) {
+        if (segments.hasOwnProperty(segment_i)) {
+          var segment = segments[segment_i];
+          draw_segment(segment);
+        }
+      }
+    }
+    function draw_segment(segment) {
+      var start = new google.maps.LatLng(segment.start_lat, segment.start_lng);
+      var end = new google.maps.LatLng(segment.end_lat, segment.end_lng);
+      var path = [start, end]
+      var segmentPath = new google.maps.Polyline({
+        path:path,
+        strokeColor: "#00FF00",
+        strokeOpacity: 1.0,
+        strokeWeight: 3
+      });
+      segmentPath.setMap(segment_map);
+      segment_bounds.extend(start);
+      segment_bounds.extend(end);
+      segment_map.fitBounds(segment_bounds);
+    }
+    function map_sample_points() {
+      for (sample_point_i in sample_points) {
+        if (sample_points.hasOwnProperty(sample_point_i)) {
+          var sample_point = sample_points[sample_point_i];
+          draw_sample_point(sample_point);
+        }
+      }
+    }
+    function draw_sample_point(sample_point) {
+      var x11 = new google.maps.LatLng(sample_point.lat - .001, sample_point.lng - .001);
+      var x12 = new google.maps.LatLng(sample_point.lat + .001, sample_point.lng + .001);
+      var x21 = new google.maps.LatLng(sample_point.lat + .001, sample_point.lng - .001);
+      var x22 = new google.maps.LatLng(sample_point.lat - .001, sample_point.lng + .001);
+      var path1 = [x11, x12];
+      var segmentPath1 = new google.maps.Polyline({
+        path:path1,
+        strokeColor: "#FF0000",
+        strokeOpacity: 1.0,
+        strokeWeight: 3
+      });
+      segmentPath1.setMap(segment_map);
+      var path2 = [x21, x22];
+      var segmentPath2 = new google.maps.Polyline({
+        path:path2,
+        strokeColor: "#FF0000",
+        strokeOpacity: 1.0,
+        strokeWeight: 3
+      });
+      segmentPath2.setMap(segment_map);
+      segment_bounds.extend(x11);
+      segment_bounds.extend(x12);
+      segment_map.fitBounds(segment_bounds);
+    }
+    function combo_map() {
+      for (sample_point_id in sample_points) {
+        if (segments.hasOwnProperty(sample_point_id)) {
+          var segment = segments[sample_point_id];
+          draw_segment(segment)
+        }
+        else if (sample_points.hasOwnProperty(sample_point_id)) {
+          var sample_point = sample_points[sample_point_id];
+          draw_sample_point(sample_point);
+        }
+      }
+    }
+    function show_segments() {
+      segment_map = new google.maps.Map($('#segment_map')[0], segment_map_options);
+      map_segments();
+    }
+    function show_sample_points() {
+      segment_map = new google.maps.Map($('#segment_map')[0], segment_map_options);
+      map_sample_points();
+    }
+    function show_both() {
+      segment_map = new google.maps.Map($('#segment_map')[0], segment_map_options);
+      map_segments();
+      map_sample_points();
+    }
+    
+    $(document).ready(function(){
+      segment_map = new google.maps.Map($('#segment_map')[0], segment_map_options);
+      combo_map();
+    });
+    
+    
+  </script>
+  <h1>Map of sample for {{study}}</h1>
+  <div id="legend"></div>
+  <div>Searched at {{ sample_points.count }} points, found {{ segments.count }} segments.</div>
+  <button onclick="show_segments()">Show Only Selected Segments</button>
+  <button onclick="show_sample_points()">Show All Sampling Points</button>
+  <button onclick="combo_map()">Show Both</button>
+  <div id="segment_map" style="width:800px; height:600px"></div>
+  <div>Sample points where no segment found shown as red X, found segment as green line.</div>
+
+{% endblock %}
+  

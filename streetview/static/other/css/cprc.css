@@ -1,0 +1,120 @@
+/* Specify blanket rules for all elements */ 
+  body { 
+    width:760px; 
+    font-size:80%; 
+    font-family:'Courier New',Courier,'Nimbus Mono L',monospace; 
+    margin: 10px; 
+    } 
+/* Rules for headings */ 
+  h1 { 
+    font-size:190%;
+    color:#000099;
+    text-align:center;
+    font-family:"Arial", Arial, serif;
+    } 
+  h2 { 
+    font-size:140%; 
+    } 
+  h3 { 
+    font-size:120%;
+    text-decoration:underline;
+    } 
+  p { 
+    font-size:100%; 
+    line-height:150%; 
+    }
+  footer { 
+    font-size:100%; 
+    line-height:150%;
+    color:#000099; 
+    text-align:center;
+    } 
+/* Masthead */ 
+  #masthead { 
+    margin:0 0 10px 0; 
+    padding:10px; 
+    border:1px solid #000; 
+    background-color:#003366; 
+    width:760px; 
+    voice-family:"\"}\""; 
+    voice-family:inherit; 
+    width:738px; 
+    } 
+  html>body #masthead { 
+    width:738px; 
+    } 
+	/* Content */ 
+	  #content { 
+	    /*margin-left:10px; 
+	    margin-right:10px;*/ 
+	    padding:10px; 
+	    border:1px solid #000; 
+	    width:738; 
+	    voice-family:"\"}\""; 
+	    voice-family:inherit; 
+	    width:738; 
+	    } 
+	  html>body #content {
+	width:738;
+	    } 
+	/* Map Doggie!!! */ 
+	  #map_canvas { 
+	    margin:10px 0 0 0;
+	    margin-left:0px; 
+	    margin-right:0px; 
+	    padding:10px; 
+	    border:1px solid #000; 
+	    width:738px; 
+	    height: 300px;
+	    voice-family:"\"}\""; 
+	    voice-family:inherit; 
+	    width:738px;
+	    height: 300px; 
+	    } 
+	  html>body #content {
+	width:738px;
+	    } 
+	/* Sidebar A */ 
+	  /*#sidebar_a { 
+	    float:left; 
+	    padding:10px; 
+	    border:1px solid #000; 
+	    width:180px; 
+	    voice-family:"\"}\""; 
+	    voice-family:inherit; 
+	    width:158px;
+	    background-color:#C6E5C2;
+	    } 
+	  html>body #sidebar_a { 
+	    width:158px; 
+	    } 
+	/* Sidebar B */ 
+	 /* #sidebar_b { 
+	    float:right; 
+	    padding:10px; 
+	    border:1px solid #000; 
+	    width:180px; 
+	    voice-family:"\"}\""; 
+	    voice-family:inherit; 
+	    width:158px;
+	    background-color:#C6E5C2;
+	    } 
+	  html>body #sidebar_b { 
+	    width:158px; 
+	    } 
+	/* Footer */ 
+	  #footer { 
+	    clear:both; 
+	    margin:10px 0 0 0;
+	    padding:10px; 
+	    border:1px solid #000; 
+	    background-color:#99CCFF; 
+	    width:760px; 
+	    voice-family:"\"}\""; 
+	    voice-family:inherit; 
+	    width:738px; 
+	    } 
+	  html>body #footer { 
+	    width:738px;
+	}
+

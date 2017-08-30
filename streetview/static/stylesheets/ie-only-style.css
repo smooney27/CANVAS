@@ -1,0 +1,8 @@
+html body #content {
+  /* IE hack needed to ensure pano is full size*/
+  height:100%;
+}
+html body #content #pano {
+  /* IE hack needed to ensure pano is full size*/
+  height:100%;
+}

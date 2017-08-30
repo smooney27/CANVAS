@@ -1,0 +1,70 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+  <script 
+  src="http://maps.google.com/maps?file=api&amp;v=2.x&amp;sensor=false&amp;key=ABQIAAAA0EgOzjPoDNZxkOv5UO5IKBT_bu186C0GVj61UKCrEThIgnb8dRT7A3mvgjFnRXVVOyWDzsw28BbnSg" 
+  type="text/javascript">
+  </script>
+  <div id="pano" style="width:100%;min-height:100%;">&nbsp;</div>
+  <div id="inset_map" style="height:250px;width:250px;position:absolute;bottom:0;right:0;z-index:2">inset map</div>
+  <script type="text/javascript">
+    var greenIcon = new GIcon(G_DEFAULT_ICON);
+    greenIcon.image = "http://www.google.com/intl/en_us/mapfiles/ms/micons/green-dot.png";
+    function handleError(errorCode) {
+      if (errorCode == 603) {
+        alert("Error: Flash doesn't appear to be supported by your browser; please use the V3 API view.");
+        return;
+      } else {
+        alert("Unexpected error: " + errorCode);
+      }
+    }
+    function initialize() {
+      var map = new GMap2(document.getElementById("pano"));
+      {% if segment.street_address != None and segment.start_lat == None %}
+        // Use geocoder to convert address to lat_lng
+        var street_address = '{{ segment.street_address }}';
+        var geocoder = new GClientGeocoder();
+        geocoder.getLatLng(street_address, function (point) {
+          if (point) {
+            // Create the inset map.
+            var map = show_inset_map(point);
+            // And initialize the streetview view.
+            var panorama_options = {latlng: point}
+            var panorama = new GStreetviewPanorama(document.getElementById('pano'), panorama_options);
+            } else {
+              pano_element.innerHTML = "Could not get lat/lng for address for the following reason: " + status;
+          }
+        });
+      {% else %}
+        // And initialize the streetview view.
+        var start_lat = {{ segment.start_lat }};
+        var start_lng = {{ segment.start_lng }};
+        var end_lat = {{ segment.end_lat }};
+        var end_lng = {{ segment.end_lng }};
+
+        // Create the inset map.
+        var start_point = new GLatLng(start_lat, start_lng);
+        var map = show_inset_map(start_point);
+        var panorama_options = {latlng: start_point}
+        var panorama = new GStreetviewPanorama(document.getElementById('pano'), panorama_options);
+
+        // And add the start/end points.  We don't seem to be able to add them to the 
+        // panorama in V2 (http://groups.google.com/group/google-maps-api/browse_thread/thread/6f5cd54ad76c203d)
+        map.addOverlay(new GMarker(start_point, {icon:greenIcon}));
+        var end_point = new GLatLng(end_lat, end_lng);
+        map.addOverlay(new GMarker(end_point));
+      {% endif %}
+    }
+
+    function show_inset_map(point) {
+        var inset_map_element = document.getElementById('inset_map');
+        map = new GMap2(inset_map_element);
+        map.setCenter(point, 15);
+        return map;
+    }
+
+    initialize();
+  </script>
+{% endblock %}
+      
+      

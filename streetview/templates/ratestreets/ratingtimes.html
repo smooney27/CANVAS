@@ -1,0 +1,76 @@
+{% extends "logged_in.html" %}
+{% load ratestreets_filters %}
+
+{% block content %}
+
+<h3>Per-Module time for completed studies</h3>
+<script>
+    function toggle_show_revision(revision, should_show) {
+        var display = should_show ? "" : "none";
+        $('tr.' + revision).each(function(index, element) {
+            element.style.display = display;
+        });
+    }
+    $(document).ready(function(){
+      $('tr.all').each(function(index, element) {
+        var revision = element.getAttribute("revision");
+        var existing_option = $('select#revision_select option[value=' + revision + ']');
+        if ($('select#revision_select option[value=' + revision + ']').size() == 0) {
+          $('select#revision_select').append("<option value='" + revision + "'>" + revision + "</option>");
+        }
+      });
+      $('select#revision_select').change(function() {
+        toggle_show_revision('all', false);
+        $('select#revision_select option:selected').each(function() {
+          toggle_show_revision(this.value, true);
+        });
+      });
+      var last_child = $('select#revision_select option:last-child')[0].selected = true;
+      $('select#revision_select').trigger('change');
+    });
+  
+</script>
+Revision:
+<select id="revision_select">
+  <option value="all">Show all</option>
+</select>
+<p>Times shown are in minutes:seconds</p>
+<table>
+  <tr>
+    <th>
+      Module
+    </th>
+    <th>
+      Min
+    </th>
+    <th>
+      Median
+    </th>
+    <th>
+      Max
+    </th>
+    <th>
+      Instances Completed
+    </th>
+  </tr>
+  {% for result in results %}
+    <tr class="all {{result.module_revision}}" revision="{{result.module_revision}}">
+      <td>
+        {{result.module_name}}
+      </td>
+      <td>
+        {{result.min|seconds_to_minutes}}
+      </td>
+      <td>
+        {{result.median|seconds_to_minutes}}
+      </td>
+      <td>
+        {{result.max|seconds_to_minutes}}
+      </td>
+      <td>
+        {{result.total}}
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock %}

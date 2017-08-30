@@ -1,0 +1,262 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+  <script type="text/javascript"
+      src="http://maps.google.com/maps/api/js?v=3.4&sensor=false">
+  </script>
+  <script type="text/javascript">
+    // todo - Code should be shared with select_segments, not copied.
+    var green_icon = new google.maps.MarkerImage('http://www.google.com/intl/en_us/mapfiles/ms/micons/green-dot.png');
+    var streetview_items = new Array();
+    var start_location_selector = null;
+    var end_location_selector = null;
+    function StreetviewLocationSelector(settings) {
+      this.pano = null;
+      this.positionChangeListener = null;
+      this.lat_input = null;
+      this.lng_input = null;
+      this.pov_input = null;
+      if (typeof(settings.lat_input) != 'undefined') {
+        this.lat_input = settings.lat_input;
+      }
+      if (typeof(settings.lng_input) != 'undefined') {
+        this.lng_input = settings.lng_input;
+      }
+      if (typeof(settings.pov_input) != 'undefined') {
+        this.pov_input = settings.pov_input;
+      }
+      if (typeof(settings.pano_element) != 'undefined') {
+        this.pano_element = settings.pano_element;
+      }
+      var pano_callback = function (self) { 
+        return function (pano) {
+          self.setPano(pano);
+        };
+      }(this);
+      g_streetview_service.initialize(settings.lat,
+                                      settings.lng,
+                                      settings.lat,
+                                      settings.lng,
+                                      this.pano_element, 
+                                      null,
+                                      pano_callback);
+      this.resetLocation = function(heading, distance) {
+        var hypot_meters = distance;
+        var heading_radians = (((90-heading)%360)/360)*Math.PI*2;
+        var lat_change_degrees = Math.sin(heading_radians) *
+            g_streetview_service.km_to_degrees(hypot_meters, null);
+        var lng_change_degrees = Math.cos(heading_radians) * 
+            g_streetview_service.km_to_degrees(hypot_meters, this.lat_input.value);
+        this.lat_input.value = parseFloat(this.lat_input.value) + lat_change_degrees;
+        this.lng_input.value = parseFloat(this.lng_input.value) + lng_change_degrees;
+        this.updatePano();
+      }
+      this.resetToPoint = function(latlng) {
+        this.lat_input.value = latlng.lat();
+        this.lng_input.value = latlng.lng();
+        this.updatePano();
+      }
+      this.getLocation = function() {
+        return new google.maps.LatLng(this.lat_input.value, this.lng_input.value);
+      }
+      this.updatePano = function() {
+        var position = new google.maps.LatLng(this.lat_input.value, this.lng_input.value);
+        this.pano.setPosition(position);
+        this.pano.setPov({heading:parseFloat(this.pov_input.value), pitch:0, zoom:1});
+        this.pano_element.style.display='none';
+        this.pano_element.style.display='';
+      }
+      this.onPositionChange = function() {
+        if (this.pano != null) {
+          var position = this.pano.getPosition();
+          if (this.lat_input != null) { this.lat_input.value = position.lat(); }
+          if (this.lng_input != null) { this.lng_input.value = position.lng(); }
+          if (this.positionChangeListener != null) {
+            this.positionChangeListener(position);
+          }
+        }
+      }
+      this.onPovChange = function() {
+        if (this.pano != null) {
+          var pov = this.pano.getPov();
+          if (this.pov_input != null) { this.pov_input.value = pov.heading; }
+        }
+      }
+      this.setPositionChangeListener = function(listener) {
+        if (typeof(listener) != 'function') { throw 'Unexpected Position Change Listener'; }
+        this.positionChangeListener = listener;
+      }
+      this.setPano = function(pano) {
+        this.pano = pano;
+        google.maps.event.addListener(pano, 'position_changed',
+          function (self) {
+            return function() { return self.onPositionChange() };
+          }(this)
+        );
+        google.maps.event.addListener(pano, 'pov_changed',
+          function (self) {
+            return function() { return self.onPovChange() };
+          }(this)
+        );
+      }
+    }
+    
+    function add_to_queue(item, segment_info) {
+      streetview_items.push({id:item, segment:segment_info});
+    }
+    function loadnextsegment() {
+      var segment_item = streetview_items.shift();
+      if (segment_item != null) {
+        var segment = segment_item.segment;
+        if (segment.start_lat == null) {
+          load_segment_from_address(segment_item.id, segment.street_address)
+        } else {
+          load_segment_from_segment_info(segment_item.id, segment);
+        }
+      }
+    }
+    function load_segment_from_address(id, address) {
+      var geocoder = new google.maps.Geocoder();
+      geocoder.geocode({address:address}, function (results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          var address_location = results[0].geometry.location
+          segment = {
+            start_lat:address_location.lat(),
+            start_lng:address_location.lng(),
+            end_lat:address_location.lat(),
+            end_lng:address_location.lng()
+          }
+          load_segment_from_segment_info(id, segment);
+        }
+      });
+    }
+    function load_segment_from_segment_info(id, segment) {
+      // Create map
+      var map_element = document.createElement('div');
+      map_element.style.height='300px';
+      map_element.style.width='400px';
+      var map = createmapforsegment(segment.start_lat,
+                                    segment.start_lng,
+                                    segment.end_lat,
+                                    segment.end_lng,
+                                    map_element);
+      // Put start and end markers on the map.
+      var startMarker = new google.maps.Marker({
+        position: new google.maps.LatLng(segment.start_lat, segment.start_lng),
+        map: map,
+        icon: green_icon,
+        title: 'Start'
+      });
+      var endMarker = new google.maps.Marker({
+        position: new google.maps.LatLng(segment.end_lat, segment.end_lng),
+        map: map,
+        title: 'End'
+      });
+      var start_pano_element = document.createElement('div');
+      start_pano_element.style.height='300px';
+      start_pano_element.style.width='400px';
+      var start_lat_input = $('input[name=start_lat]')[0];
+      var start_lng_input = $('input[name=start_lng]')[0];
+      var pov_input = $('input[name=point_of_view]')[0];
+      start_location_selector = new StreetviewLocationSelector({lat: segment.start_lat,
+                                                                lat_input: start_lat_input, 
+                                                                lng: segment.start_lng,
+                                                                lng_input: start_lng_input, 
+                                                                pov_input: pov_input,
+                                                                pano_element: start_pano_element});
+      start_location_selector.setPositionChangeListener(function(position) { updateMarker(startMarker, position); });
+      var end_pano_element = document.createElement('div');
+      end_pano_element.style.height='300px';
+      end_pano_element.style.width='400px';
+      var end_lat_input = $('input[name=end_lat]')[0];
+      var end_lng_input = $('input[name=end_lng]')[0];
+      end_location_selector = new StreetviewLocationSelector({lat: segment.end_lat, 
+                                                              lat_input: end_lat_input,
+                                                              lng: segment.end_lng,
+                                                              lng_input: end_lng_input,
+                                                              pano_element: end_pano_element})
+      end_location_selector.setPositionChangeListener(function(position) { updateMarker(endMarker, position); });
+      var table = document.createElement('table');
+      var row = document.createElement('tr');
+      table.appendChild(row);
+      var start_td = document.createElement('td');
+      start_td.appendChild(start_pano_element);
+      var map_td = document.createElement('td');
+      map_td.appendChild(map_element);
+      var end_td = document.createElement('td');
+      end_td.appendChild(end_pano_element);
+      row.appendChild(start_td);
+      row.appendChild(map_td);
+      row.appendChild(end_td);
+      $("div[auto_id='" + id + "']").append(table);
+      // The map positioning doesn't seem to work correctly when the map is not on screen,
+      // so trigger a resize and recenter. 
+      google.maps.event.trigger(map, 'resize');
+      map.setCenter(new google.maps.LatLng(segment.start_lat, segment.start_lng));
+      // When we finish loading a segment, check for more segments to load...
+      setTimeout(loadnextsegment, 1000);
+    }
+    function ResetStart() {
+      var heading = Math.random() * 360;
+      start_location_selector.resetLocation(heading, .05);
+    }
+    function ResetEnd() {
+      end_location_selector.resetToPoint(start_location_selector.getLocation());
+    }
+    function updateMarker(marker, position) {
+      marker.setPosition(position);
+    }
+    function createmapforsegment(start_lat, start_lng, end_lat, end_lng, element) {
+      var mapOptions = {
+        center: new google.maps.LatLng(start_lat, start_lng),
+        zoom: 15,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        disableDefaultUI: false,
+        streetViewControl: true,
+        mapTypeControl:false,
+        zoomControl:true,
+      };
+      return new google.maps.Map(element, mapOptions);
+    }
+    $(document).ready(function(){
+      loadnextsegment();
+    });
+  </script>
+  <form method="post">
+    {% csrf_token %}
+    {% autoescape off %}
+      {{ form.render_heading }}
+      {{ form.render_script }}
+      <table>
+        <tr>
+          {% for field in form %}
+            {% if field.is_hidden %}
+              <td>
+              </td>
+            {% else %}
+              <td>
+                {{ field.errors }}
+              </td>
+            {% endif %}
+          {% endfor %}
+        </tr>
+        <tr>
+          {% for field in form %}
+            {% if field.is_hidden %}
+              <td>
+                {{ field }}
+              </td>
+            {% else %}
+              <td>
+                {{ field.label_tag }}:{{ field }}
+              </td>
+            {% endif %}
+          {% endfor %}
+        </tr>
+      </table>
+    {% endautoescape %}
+    <input type="submit" value="Update" />
+  </form>
+  <button onclick="ResetStart()">Move Start Point at Random</button>
+  <button onclick="ResetEnd()">Move End Point to Start Point</button>
+{% endblock %}

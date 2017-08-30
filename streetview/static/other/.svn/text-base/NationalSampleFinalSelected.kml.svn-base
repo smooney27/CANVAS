@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document>
+<name>Streetview 150 Blocks Final</name>
+<description>The 150 blocks used for the Summer 2011 test of the Streetview street rating system.</description>
+<Placemark><name>Byswick Pl, North Carolina</name><description>Byswick Pl, North Carolina</description><Point><coordinates>-80.762564,35.129419,0</coordinates></Point></Placemark>
+<Placemark><name>SE 170th Ave, Oregon</name><description>SE 170th Ave, Oregon</description><Point><coordinates>-122.487868,45.498578,0</coordinates></Point></Placemark>
+<Placemark><name>Hicks St, New York</name><description>Hicks St, New York</description><Point><coordinates>-73.702276,40.665253,0</coordinates></Point></Placemark>
+<Placemark><name>Sandy Ln, Texas</name><description>Sandy Ln, Texas</description><Point><coordinates>-97.198766,32.745813,0</coordinates></Point></Placemark>
+<Placemark><name>S 22nd St, Indiana</name><description>S 22nd St, Indiana</description><Point><coordinates>-87.383597,39.462433,0</coordinates></Point></Placemark>
+<Placemark><name>N Dunlap St, Tennessee</name><description>N Dunlap St, Tennessee</description><Point><coordinates>-90.030564,35.158245,0</coordinates></Point></Placemark>
+<Placemark><name>Holly Dr, Louisiana</name><description>Holly Dr, Louisiana</description><Point><coordinates>-90.052616,29.916837,0</coordinates></Point></Placemark>
+<Placemark><name>E 1st St, New York</name><description>E 1st St, New York</description><Point><coordinates>-73.988446,40.723274,0</coordinates></Point></Placemark>
+<Placemark><name>S US Highway 71, Missouri</name><description>S US Highway 71, Missouri</description><Point><coordinates>-94.525985,38.885014,0</coordinates></Point></Placemark>
+<Placemark><name>Driveway, California</name><description>Driveway, California</description><Point><coordinates>-118.265782,33.834085,0</coordinates></Point></Placemark>
+<Placemark><name>Orchard Ave, California</name><description>Orchard Ave, California</description><Point><coordinates>-118.199582,33.977952,0</coordinates></Point></Placemark>
+<Placemark><name>Speight Ave, Texas</name><description>Speight Ave, Texas</description><Point><coordinates>-97.113745,31.546430,0</coordinates></Point></Placemark>
+<Placemark><name>Rainbow Dr, Wisconsin</name><description>Rainbow Dr, Wisconsin</description><Point><coordinates>-87.983207,42.926509,0</coordinates></Point></Placemark>
+<Placemark><name>Dittmar Dr, California</name><description>Dittmar Dr, California</description><Point><coordinates>-118.030701,33.954024,0</coordinates></Point></Placemark>
+<Placemark><name>S West St, California</name><description>S West St, California</description><Point><coordinates>-119.296257,36.305664,0</coordinates></Point></Placemark>
+<Placemark><name>N Ambassador Dr, Missouri</name><description>N Ambassador Dr, Missouri</description><Point><coordinates>-94.682127,39.306954,0</coordinates></Point></Placemark>
+<Placemark><name>Highway 89, Florida</name><description>Highway 89, Florida</description><Point><coordinates>-87.092947,30.766943,0</coordinates></Point></Placemark>
+<Placemark><name>McKinney St, Michigan</name><description>McKinney St, Michigan</description><Point><coordinates>-82.940345,42.424468,0</coordinates></Point></Placemark>
+<Placemark><name>Boonton Ave, New Jersey</name><description>Boonton Ave, New Jersey</description><Point><coordinates>-74.347238,40.983468,0</coordinates></Point></Placemark>
+<Placemark><name>N Tully Rd, California</name><description>N Tully Rd, California</description><Point><coordinates>-121.133034,38.147424,0</coordinates></Point></Placemark>
+<Placemark><name>Furman Ave, New York</name><description>Furman Ave, New York</description><Point><coordinates>-73.850666,40.901631,0</coordinates></Point></Placemark>
+<Placemark><name>Kittiwake Dr, Kentucky</name><description>Kittiwake Dr, Kentucky</description><Point><coordinates>-84.465548,37.978008,0</coordinates></Point></Placemark>
+<Placemark><name>San Jose St, California</name><description>San Jose St, California</description><Point><coordinates>-118.502511,34.261142,0</coordinates></Point></Placemark>
+<Placemark><name>SW B Ave, Oklahoma</name><description>SW B Ave, Oklahoma</description><Point><coordinates>-98.429051,34.606184,0</coordinates></Point></Placemark>
+<Placemark><name>Bluffcrest, Texas</name><description>Bluffcrest, Texas</description><Point><coordinates>-98.499999,29.563510,0</coordinates></Point></Placemark>
+<Placemark><name>161st St, New York</name><description>161st St, New York</description><Point><coordinates>-73.805145,40.758819,0</coordinates></Point></Placemark>
+<Placemark><name>Aster Dr, North Carolina</name><description>Aster Dr, North Carolina</description><Point><coordinates>-79.747951,36.057244,0</coordinates></Point></Placemark>
+<Placemark><name>32nd Ave, New York</name><description>32nd Ave, New York</description><Point><coordinates>-73.868828,40.759171,0</coordinates></Point></Placemark>
+<Placemark><name>Arnold St, Pennsylvania</name><description>Arnold St, Pennsylvania</description><Point><coordinates>-80.047889,40.439886,0</coordinates></Point></Placemark>
+<Placemark><name>Cedar Valley Ter, Oklahoma</name><description>Cedar Valley Ter, Oklahoma</description><Point><coordinates>-97.535489,35.353275,0</coordinates></Point></Placemark>
+<Placemark><name>Kent Ave, New York</name><description>Kent Ave, New York</description><Point><coordinates>-73.958994,40.692630,0</coordinates></Point></Placemark>
+<Placemark><name>W Harvey St, Pennsylvania</name><description>W Harvey St, Pennsylvania</description><Point><coordinates>-75.184503,40.032502,0</coordinates></Point></Placemark>
+<Placemark><name>Robinson Dr NW, Minnesota</name><description>Robinson Dr NW, Minnesota</description><Point><coordinates>-93.299597,45.164836,0</coordinates></Point></Placemark>
+<Placemark><name>Broad St, California</name><description>Broad St, California</description><Point><coordinates>-122.456063,37.713198,0</coordinates></Point></Placemark>
+<Placemark><name>W Grand Ave, Illinois</name><description>W Grand Ave, Illinois</description><Point><coordinates>-87.643930,41.891291,0</coordinates></Point></Placemark>
+<Placemark><name>Norborne, Michigan</name><description>Norborne, Michigan</description><Point><coordinates>-83.299598,42.435482,0</coordinates></Point></Placemark>
+<Placemark><name>Sonoma Ct, Rhode Island</name><description>Sonoma Ct, Rhode Island</description><Point><coordinates>-71.441799,41.819526,0</coordinates></Point></Placemark>
+<Placemark><name>Thornton Pl, Alabama</name><description>Thornton Pl, Alabama</description><Point><coordinates>-88.156041,30.672508,0</coordinates></Point></Placemark>
+<Placemark><name>S Denley Dr, Texas</name><description>S Denley Dr, Texas</description><Point><coordinates>-96.799094,32.700982,0</coordinates></Point></Placemark>
+<Placemark><name>E Escalante Rd, Arizona</name><description>E Escalante Rd, Arizona</description><Point><coordinates>-110.822732,32.177403,0</coordinates></Point></Placemark>
+<Placemark><name>Crescent Ave, Missouri</name><description>Crescent Ave, Missouri</description><Point><coordinates>-94.467608,39.034522,0</coordinates></Point></Placemark>
+<Placemark><name>NE Hassalo St, Oregon</name><description>NE Hassalo St, Oregon</description><Point><coordinates>-122.576331,45.530945,0</coordinates></Point></Placemark>
+<Placemark><name>Farrington Dr, Virginia</name><description>Farrington Dr, Virginia</description><Point><coordinates>-76.148156,36.892716,0</coordinates></Point></Placemark>
+<Placemark><name>S 13th St, New Jersey</name><description>S 13th St, New Jersey</description><Point><coordinates>-74.205139,40.736225,0</coordinates></Point></Placemark>
+<Placemark><name>East Ave, Ohio</name><description>East Ave, Ohio</description><Point><coordinates>-81.569014,41.048311,0</coordinates></Point></Placemark>
+<Placemark><name>Wakonda View Dr, Iowa</name><description>Wakonda View Dr, Iowa</description><Point><coordinates>-93.645068,41.546670,0</coordinates></Point></Placemark>
+<Placemark><name>Fairview Ave, Colorado</name><description>Fairview Ave, Colorado</description><Point><coordinates>-105.019370,39.837551,0</coordinates></Point></Placemark>
+<Placemark><name>Pickwood Dr, Florida</name><description>Pickwood Dr, Florida</description><Point><coordinates>-87.245830,30.532741,0</coordinates></Point></Placemark>
+<Placemark><name>N Pete Dawson Rd, Arizona</name><description>N Pete Dawson Rd, Arizona</description><Point><coordinates>-110.984643,32.317368,0</coordinates></Point></Placemark>
+<Placemark><name>N 24th St, Arizona</name><description>N 24th St, Arizona</description><Point><coordinates>-112.030233,33.471669,0</coordinates></Point></Placemark>
+<Placemark><name>Bostwick Ave, New Jersey</name><description>Bostwick Ave, New Jersey</description><Point><coordinates>-74.078421,40.705901,0</coordinates></Point></Placemark>
+<Placemark><name>Maunakea St, Hawaii</name><description>Maunakea St, Hawaii</description><Point><coordinates>-157.863626,21.311812,0</coordinates></Point></Placemark>
+<Placemark><name>S Parent St, Michigan</name><description>S Parent St, Michigan</description><Point><coordinates>-83.391074,42.309896,0</coordinates></Point></Placemark>
+<Placemark><name>Orizaba Ave, California</name><description>Orizaba Ave, California</description><Point><coordinates>-118.157830,33.869246,0</coordinates></Point></Placemark>
+<Placemark><name>S Harbor Dr, Wisconsin</name><description>S Harbor Dr, Wisconsin</description><Point><coordinates>-87.896842,43.012190,0</coordinates></Point></Placemark>
+<Placemark><name>Berkeley Rd, Ohio</name><description>Berkeley Rd, Ohio</description><Point><coordinates>-81.564324,41.510605,0</coordinates></Point></Placemark>
+<Placemark><name>George St, New York</name><description>George St, New York</description><Point><coordinates>-73.929846,40.703049,0</coordinates></Point></Placemark>
+<Placemark><name>Jasper St, Ohio</name><description>Jasper St, Ohio</description><Point><coordinates>-84.186712,39.741210,0</coordinates></Point></Placemark>
+<Placemark><name>Muldoon Rd, Alaska</name><description>Muldoon Rd, Alaska</description><Point><coordinates>-149.733459,61.202591,0</coordinates></Point></Placemark>
+<Placemark><name>Lander Rd, Ohio</name><description>Lander Rd, Ohio</description><Point><coordinates>-81.463257,41.523581,0</coordinates></Point></Placemark>
+<Placemark><name>Globe St, Texas</name><description>Globe St, Texas</description><Point><coordinates>-95.233113,29.650223,0</coordinates></Point></Placemark>
+<Placemark><name>Camp Alley St, Ohio</name><description>Camp Alley St, Ohio</description><Point><coordinates>-82.433945,40.054088,0</coordinates></Point></Placemark>
+<Placemark><name>Eagle Trl, Texas</name><description>Eagle Trl, Texas</description><Point><coordinates>-97.883556,31.123378,0</coordinates></Point></Placemark>
+<Placemark><name>E 115th St, New York</name><description>E 115th St, New York</description><Point><coordinates>-73.945358,40.799295,0</coordinates></Point></Placemark>
+<Placemark><name>S Buffalo Ave, Illinois</name><description>S Buffalo Ave, Illinois</description><Point><coordinates>-87.544393,41.735667,0</coordinates></Point></Placemark>
+<Placemark><name>Noice Dr, California</name><description>Noice Dr, California</description><Point><coordinates>-121.651316,36.701901,0</coordinates></Point></Placemark>
+<Placemark><name>Newport Ave, California</name><description>Newport Ave, California</description><Point><coordinates>-117.819715,33.740471,0</coordinates></Point></Placemark>
+<Placemark><name>W Bryn Mawr Ave, Illinois</name><description>W Bryn Mawr Ave, Illinois</description><Point><coordinates>-87.739532,41.982572,0</coordinates></Point></Placemark>
+<Placemark><name>W Irving Park Rd, Illinois</name><description>W Irving Park Rd, Illinois</description><Point><coordinates>-87.722717,41.953687,0</coordinates></Point></Placemark>
+<Placemark><name>Grinnell St, Michigan</name><description>Grinnell St, Michigan</description><Point><coordinates>-83.017623,42.400909,0</coordinates></Point></Placemark>
+<Placemark><name>Adams St SE, New Mexico</name><description>Adams St SE, New Mexico</description><Point><coordinates>-106.594339,35.074320,0</coordinates></Point></Placemark>
+<Placemark><name>Oakshire Dr, Texas</name><description>Oakshire Dr, Texas</description><Point><coordinates>-95.455989,29.736928,0</coordinates></Point></Placemark>
+<Placemark><name>Pacific St, New York</name><description>Pacific St, New York</description><Point><coordinates>-73.955192,40.678347,0</coordinates></Point></Placemark>
+<Placemark><name>N 14th Pl, Arizona</name><description>N 14th Pl, Arizona</description><Point><coordinates>-112.050819,33.501980,0</coordinates></Point></Placemark>
+<Placemark><name>W 1st St, California</name><description>W 1st St, California</description><Point><coordinates>-118.306717,34.073704,0</coordinates></Point></Placemark>
+<Placemark><name>12th St N, Florida</name><description>12th St N, Florida</description><Point><coordinates>-82.650798,27.790203,0</coordinates></Point></Placemark>
+<Placemark><name>157th St, Illinois</name><description>157th St, Illinois</description><Point><coordinates>-87.743868,41.606741,0</coordinates></Point></Placemark>
+<Placemark><name>Wanda Ln, California</name><description>Wanda Ln, California</description><Point><coordinates>-116.894856,33.753306,0</coordinates></Point></Placemark>
+<Placemark><name>16th St, New York</name><description>16th St, New York</description><Point><coordinates>-73.978014,40.659256,0</coordinates></Point></Placemark>
+<Placemark><name>County Hwy 102, Florida</name><description>County Hwy 102, Florida</description><Point><coordinates>-82.716725,28.012146,0</coordinates></Point></Placemark>
+<Placemark><name>N Medina St, Texas</name><description>N Medina St, Texas</description><Point><coordinates>-98.505004,29.427023,0</coordinates></Point></Placemark>
+<Placemark><name>Villa Loma Dr, Colorado</name><description>Villa Loma Dr, Colorado</description><Point><coordinates>-104.731464,38.867942,0</coordinates></Point></Placemark>
+<Placemark><name>Castor Ave, Pennsylvania</name><description>Castor Ave, Pennsylvania</description><Point><coordinates>-75.051903,40.066172,0</coordinates></Point></Placemark>
+<Placemark><name>E Camelback Rd, Arizona</name><description>E Camelback Rd, Arizona</description><Point><coordinates>-112.014524,33.510040,0</coordinates></Point></Placemark>
+<Placemark><name>Birch St, Alaska</name><description>Birch St, Alaska</description><Point><coordinates>-149.871343,61.228859,0</coordinates></Point></Placemark>
+<Placemark><name>S 5th St, Indiana</name><description>S 5th St, Indiana</description><Point><coordinates>-87.411235,39.455603,0</coordinates></Point></Placemark>
+<Placemark><name>N 131st Dr, Kansas</name><description>N 131st Dr, Kansas</description><Point><coordinates>-94.881004,39.176733,0</coordinates></Point></Placemark>
+<Placemark><name>Muskogee St, Texas</name><description>Muskogee St, Texas</description><Point><coordinates>-98.585217,29.415844,0</coordinates></Point></Placemark>
+<Placemark><name>S 1st St, Oklahoma</name><description>S 1st St, Oklahoma</description><Point><coordinates>-97.744733,35.495203,0</coordinates></Point></Placemark>
+<Placemark><name>Gordon St, Louisiana</name><description>Gordon St, Louisiana</description><Point><coordinates>-90.011820,29.961144,0</coordinates></Point></Placemark>
+<Placemark><name>Robertson St, Texas</name><description>Robertson St, Texas</description><Point><coordinates>-95.357462,29.806629,0</coordinates></Point></Placemark>
+<Placemark><name>H St NW, District of Columbia</name><description>H St NW, District of Columbia</description><Point><coordinates>-77.050130,38.899575,0</coordinates></Point></Placemark>
+<Placemark><name>W Farragut Ave, Illinois</name><description>W Farragut Ave, Illinois</description><Point><coordinates>-87.684308,41.976883,0</coordinates></Point></Placemark>
+<Placemark><name>Lake Limestone Dr, Louisiana</name><description>Lake Limestone Dr, Louisiana</description><Point><coordinates>-91.049444,30.414397,0</coordinates></Point></Placemark>
+<Placemark><name>Smith St, Nevada</name><description>Smith St, Nevada</description><Point><coordinates>-115.217822,36.187507,0</coordinates></Point></Placemark>
+<Placemark><name>Timberline Dr, New Jersey</name><description>Timberline Dr, New Jersey</description><Point><coordinates>-74.381269,40.646277,0</coordinates></Point></Placemark>
+<Placemark><name>N 56th St, Wisconsin</name><description>N 56th St, Wisconsin</description><Point><coordinates>-87.982540,43.108367,0</coordinates></Point></Placemark>
+<Placemark><name>S 2nd St, Wisconsin</name><description>S 2nd St, Wisconsin</description><Point><coordinates>-87.912605,43.016050,0</coordinates></Point></Placemark>
+<Placemark><name>William St, Nebraska</name><description>William St, Nebraska</description><Point><coordinates>-96.175110,41.245304,0</coordinates></Point></Placemark>
+<Placemark><name>28th St, Alabama</name><description>28th St, Alabama</description><Point><coordinates>-87.579491,33.235395,0</coordinates></Point></Placemark>
+<Placemark><name>Empire Blvd, New York</name><description>Empire Blvd, New York</description><Point><coordinates>-73.939938,40.663907,0</coordinates></Point></Placemark>
+<Placemark><name>Village Center Dr, California</name><description>Village Center Dr, California</description><Point><coordinates>-117.248550,33.054671,0</coordinates></Point></Placemark>
+<Placemark><name>N 144th St, Nebraska</name><description>N 144th St, Nebraska</description><Point><coordinates>-96.138851,41.302399,0</coordinates></Point></Placemark>
+<Placemark><name>National Cemetery, Tennessee</name><description>National Cemetery, Tennessee</description><Point><coordinates>-85.289337,35.035141,0</coordinates></Point></Placemark>
+<Placemark><name>73rd Ave NE, Minnesota</name><description>73rd Ave NE, Minnesota</description><Point><coordinates>-93.243535,45.100505,0</coordinates></Point></Placemark>
+<Placemark><name>Commodore Ter, Massachusetts</name><description>Commodore Ter, Massachusetts</description><Point><coordinates>-71.129070,42.255700,0</coordinates></Point></Placemark>
+<Placemark><name>16th St NW, District of Columbia</name><description>16th St NW, District of Columbia</description><Point><coordinates>-77.036558,38.900232,0</coordinates></Point></Placemark>
+<Placemark><name>Gold Dust Dr, Texas</name><description>Gold Dust Dr, Texas</description><Point><coordinates>-98.676166,29.429394,0</coordinates></Point></Placemark>
+<Placemark><name>Victoria Dr, Florida</name><description>Victoria Dr, Florida</description><Point><coordinates>-82.791123,28.015749,0</coordinates></Point></Placemark>
+<Placemark><name>Harlow Blvd, Florida</name><description>Harlow Blvd, Florida</description><Point><coordinates>-81.755203,30.258823,0</coordinates></Point></Placemark>
+<Placemark><name>Washington St, Massachusetts</name><description>Washington St, Massachusetts</description><Point><coordinates>-72.578010,42.151114,0</coordinates></Point></Placemark>
+<Placemark><name>Falcons Height, Texas</name><description>Falcons Height, Texas</description><Point><coordinates>-98.360345,29.558012,0</coordinates></Point></Placemark>
+<Placemark><name>Seymour Rd, Virginia</name><description>Seymour Rd, Virginia</description><Point><coordinates>-78.508182,38.048028,0</coordinates></Point></Placemark>
+<Placemark><name>N River View Ave, Florida</name><description>N River View Ave, Florida</description><Point><coordinates>-82.478798,27.978322,0</coordinates></Point></Placemark>
+<Placemark><name>74th St, Iowa</name><description>74th St, Iowa</description><Point><coordinates>-93.719500,41.645595,0</coordinates></Point></Placemark>
+<Placemark><name>Bordeaux St, Alabama</name><description>Bordeaux St, Alabama</description><Point><coordinates>-88.086184,30.652241,0</coordinates></Point></Placemark>
+<Placemark><name>Main St, Pennsylvania</name><description>Main St, Pennsylvania</description><Point><coordinates>-80.090614,40.381619,0</coordinates></Point></Placemark>
+<Placemark><name>River Thames Rd, Mississippi</name><description>River Thames Rd, Mississippi</description><Point><coordinates>-90.129793,32.371882,0</coordinates></Point></Placemark>
+<Placemark><name>Encino Bow, Texas</name><description>Encino Bow, Texas</description><Point><coordinates>-98.447954,29.624642,0</coordinates></Point></Placemark>
+<Placemark><name>Woody Ln, Texas</name><description>Woody Ln, Texas</description><Point><coordinates>-97.254569,32.658538,0</coordinates></Point></Placemark>
+<Placemark><name>Newman St, Idaho</name><description>Newman St, Idaho</description><Point><coordinates>-116.265789,43.629156,0</coordinates></Point></Placemark>
+<Placemark><name>E Travis Blvd, California</name><description>E Travis Blvd, California</description><Point><coordinates>-122.020969,38.258148,0</coordinates></Point></Placemark>
+<Placemark><name>W 44th Pl, Illinois</name><description>W 44th Pl, Illinois</description><Point><coordinates>-87.747030,41.811851,0</coordinates></Point></Placemark>
+<Placemark><name>Greene Ave, New York</name><description>Greene Ave, New York</description><Point><coordinates>-73.933541,40.690428,0</coordinates></Point></Placemark>
+<Placemark><name>2nd Ave, Alabama</name><description>2nd Ave, Alabama</description><Point><coordinates>-86.977517,34.809360,0</coordinates></Point></Placemark>
+<Placemark><name>Lone Oak Ct, California</name><description>Lone Oak Ct, California</description><Point><coordinates>-121.306014,38.772492,0</coordinates></Point></Placemark>
+<Placemark><name>N College Way, California</name><description>N College Way, California</description><Point><coordinates>-117.712610,34.099654,0</coordinates></Point></Placemark>
+<Placemark><name>S Halsted St, Illinois</name><description>S Halsted St, Illinois</description><Point><coordinates>-87.643062,41.712380,0</coordinates></Point></Placemark>
+<Placemark><name>Grandview Dr, Kentucky</name><description>Grandview Dr, Kentucky</description><Point><coordinates>-82.631343,38.445696,0</coordinates></Point></Placemark>
+<Placemark><name>Galleria Cv, Texas</name><description>Galleria Cv, Texas</description><Point><coordinates>-97.758073,30.412957,0</coordinates></Point></Placemark>
+<Placemark><name>N Booth Ct, Missouri</name><description>N Booth Ct, Missouri</description><Point><coordinates>-94.479676,39.258479,0</coordinates></Point></Placemark>
+<Placemark><name>Avenue of the Americas, New York</name><description>Avenue of the Americas, New York</description><Point><coordinates>-74.004278,40.724830,0</coordinates></Point></Placemark>
+<Placemark><name>59th St, New York</name><description>59th St, New York</description><Point><coordinates>-73.908761,40.724694,0</coordinates></Point></Placemark>
+<Placemark><name>229th St, New York</name><description>229th St, New York</description><Point><coordinates>-73.729622,40.697831,0</coordinates></Point></Placemark>
+<Placemark><name>Coast Blvd, California</name><description>Coast Blvd, California</description><Point><coordinates>-117.274082,32.849458,0</coordinates></Point></Placemark>
+<Placemark><name>Winter Park Ln, Florida</name><description>Winter Park Ln, Florida</description><Point><coordinates>-80.102600,26.795786,0</coordinates></Point></Placemark>
+<Placemark><name>W Palmer St, Illinois</name><description>W Palmer St, Illinois</description><Point><coordinates>-87.718021,41.920958,0</coordinates></Point></Placemark>
+<Placemark><name>Long Ave, Illinois</name><description>Long Ave, Illinois</description><Point><coordinates>-87.755546,41.739730,0</coordinates></Point></Placemark>
+<Placemark><name>National Ave, Illinois</name><description>National Ave, Illinois</description><Point><coordinates>-89.079224,42.282446,0</coordinates></Point></Placemark>
+<Placemark><name>Cloverdale Rd, Ohio</name><description>Cloverdale Rd, Ohio</description><Point><coordinates>-83.572003,41.348501,0</coordinates></Point></Placemark>
+<Placemark><name>Durbridge Rd, Ohio</name><description>Durbridge Rd, Ohio</description><Point><coordinates>-82.974319,40.089070,0</coordinates></Point></Placemark>
+<Placemark><name>3rd St, Texas</name><description>3rd St, Texas</description><Point><coordinates>-101.847977,33.594353,0</coordinates></Point></Placemark>
+<Placemark><name>Swift Rd, Florida</name><description>Swift Rd, Florida</description><Point><coordinates>-82.514084,27.290752,0</coordinates></Point></Placemark>
+<Placemark><name>Oakley St, Utah</name><description>Oakley St, Utah</description><Point><coordinates>-111.926981,40.777990,0</coordinates></Point></Placemark>
+<Placemark><name>8th Ave, New York</name><description>8th Ave, New York</description><Point><coordinates>-74.002517,40.739754,0</coordinates></Point></Placemark>
+<Placemark><name>Jerome St, California</name><description>Jerome St, California</description><Point><coordinates>-117.424371,33.952536,0</coordinates></Point></Placemark>
+<Placemark><name>State Hwy 1, California</name><description>State Hwy 1, California</description><Point><coordinates>-120.871707,35.408565,0</coordinates></Point></Placemark>
+<Placemark><name>23rd Ave, Washington</name><description>23rd Ave, Washington</description><Point><coordinates>-122.302773,47.609024,0</coordinates></Point></Placemark>
+<Placemark><name>Ridge Rd, Maryland</name><description>Ridge Rd, Maryland</description><Point><coordinates>-76.485666,39.350525,0</coordinates></Point></Placemark>
+<Placemark><name>Hartley Dr, California</name><description>Hartley Dr, California</description><Point><coordinates>-117.257889,32.827388,0</coordinates></Point></Placemark>
+</Document>
+</kml>

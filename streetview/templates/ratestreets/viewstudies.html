@@ -1,0 +1,52 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+
+<h3>My Studies</h3>
+<table>
+  <tr>
+    <th>
+      Name
+    </th>
+    <th>
+      Completed
+    </th>
+    <th>
+      Total
+    </th>
+    <th>
+      Complete
+    </th>
+    <th>
+      Actions
+    </th>
+  </tr>
+  {% for study in studies %}
+    <tr>
+      <td>
+        {{ study.name }}
+      </td>
+      <td>
+        {{study.completed_tasks}}
+      </td>
+      <td>
+        {{study.total_tasks}}
+      </td>
+      <td>
+        {{study.percent_complete}}%
+      </td>
+      <td>
+        <a href="{% url ratestreets.views.editstudy study.id %}">Edit</a>
+        <a href="{% url ratestreets.views.export_data study.id %}">Export Data</a>
+        <a href="{% url ratestreets.views.studyresults study.id %}">Reliability</a>
+        <a href="{% url ratestreets.views.selectquickmap study.id %}">Map</a>
+        <a href="{% url ratestreets.views.listsegments study.id %}">List Segments</a>
+        <a href="{% url ratestreets.views.evaluateraters study.id %}">Check Rating Times</a>
+        <a href="{% url ratestreets.views.startsegmentselection study.id %}">Import Segments (segments defined)</a>
+        <a href="{% url ratestreets.views.startsegmentautoselect study.id %}">Import Segments (autoselect)</a>
+        <a href="{% url ratestreets.views.showsamplemap study.id %}">Sample Map</a>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,66 @@
+instrument,number,category 1,category 2,measure,codes,skip patterns,Help Text,,,,,,,,,,,,,,,,,
+,,,,,,,,A1. City Life,A1. Vida de ciudad,,,,,,,,,,,,,,,
+A,1,,,category,,,,"I am going to ask you questions about your experiences in New York City. By NYC, I mean all 5 boroughs: Manhattan, Queens, Brooklyn, Staten Island, & the Bronx.\nHow long have you lived in NYC?","Voy a hacerle preguntas acerca de sus experiencias en New York City. Por NYC, significo las 5 ciudades: Manhattan, Queens, Brooklyn, isla de Staten, & el Bronx.\nCuánto tiempo tenga usted vivió en NYC?",0,One to Eleven months,Un a once meses,1,More than a year,More than a year (Spanish),,,,,,,,,
+A,1a,,,count,,A1!=1->0,,How many years have you lived in New York City?,,max_digits=3,,,,,,,,,,,,,,
+,,,,,,,,A2. City Life,A2. Vida de ciudad,,,,,,,,,,,,,,,
+A,2,,,category,,,,"In general, how would you rate NYC as a place to live",Generalmente cómo usted clasificaría NYC como lugar para vivir? Es... ,1,Excellent,Excelente,2,Very Good,Muy bueno,3,Good,Bueno,4,Fair,Justo,5,Poor,Pobre
+,,,,,,,,A3. City Life,A3. Vida de ciudad,,,,,,,,,,,,,,,
+A,3,,,category,,,,"Do you think that in the past 3 years NYC has gotten better, gotten worse, or is it about the same as a place to live?","Usted piensa eso en los últimos 3 años que NYC ha conseguido mejor, conseguido peor, o está casi Como un lugar a vivir?",1,Better,Mejor,2,Worse,Peor,3,Same,Iguales,,,,,,
+,,,,,,,,A4. City Life,A4. Vida de ciudad,,,,,,,,,,,,,,,
+A,4,,,category,,,,"Overall, what grade would you give the NYPD for the services they provide in NYC? Would you give it an... ","¿Total, qué grado usted daría a NYPD para los servicios que proporcionan en NYC? Usted lo daría…",1,"""A""","""A""",2,"""B""","""B""",3,"""C""","""C""",4,"""D""","""D""",5,"""F""","""F"""
+,,,,,,,,B1. Neighborhood Life,B1. Vida De La Vecindad,,,,,,,,,,,,,,,
+B,1,,,count,,,,<p>The next questions are about your neighborhood. </p><p>What is your zip code?</p>,<p>Las preguntas siguientes están sobre su vecindad.</p><p>Cuál es su código postal?</p>,max_digits=5;min_digits=5,,,,,,,,,,,,,,
+B,1a,,,text,,if_skipped(B1),,What are the cross street/avenue name of where you live?,Cuáles son el nombre cruzado de la avenida de la calle de donde usted vive?,,,,,,,,,,,,,,,
+,,,,,,,,B2. Neighborhood Life,B2. Vida De La Vecindad,,,,,,,,,,,,,,,
+B,2,,,category,,,,How long have you lived in your neighborhood?,Cuánto tiempo tenga usted vivió en su vecindad?,0,One to Eleven months,Un a once meses,1,More than a year,,,,,,,,,,
+B,2a,,,count,,B2!=1->0,,How many years have you lived in your neighborhood?,,max_digits=3,,,,,,,,,,,,,,
+,,,,,,,,B3. Neighborhood Life,B3. Vida De La Vecindad,,,,,,,,,,,,,,,
+B,3,,,category,,,,How would you rate your neighborhood?  Would you say...?,¿Cómo calificaría su Vecindario? Diría usted que...?,1,Very Good,Muy bueno,2,Good,Bueno,3,Fair,Justo or Feria,4,Poor,Pobre,,,
+,,,,,,,,B4. Neighborhood Life,B4. Vida De La Vecindad,,,,,,,,,,,,,,,
+B,4,,,category,,,,"Looking back over the past 3 years, would you say as a place to live has this Neighborhood become better, gotten worse, or is it about the same?","Mirando hacia atrás en los últimos tres años, ¿diría que como un lugar para vivir se ha convertido en el Barrio mejorado, ha empeorado, o es más o menos igual?",1,Better,Mejor,2,Worse,Peor,3,Same,Iguales,,,,,,
+,,,,,,,,B5. Neighborhood Life,B5. Vida De La Vecindad,,,,,,,,,,,,,,,
+B,5,,,category,,,,How safe do you feel walking alone at night in your Neighborhood? Do you feel...?,¿Qué tan seguro se siente caminando solo por la noche en su Vecindario? Usted siente...?,1,Very Safe,Muy seguro,2,Somewhat Safe,Algo seguro,3,Somewhat Unsafe,Algo inseguro,4,Very Unsafe,Muy inseguro,,,
+,,,,,,,,B6. Neighborhood Life,B6. Vida De La Vecindad,,,,,,,,,,,,,,,
+B,6,,,category,,,,How would you grade the services provided by the NYPD in your Neighborhood? ,Cómo usted calificaría los servicios proporcionados por el NYPD en su vecindad? ,1,"""A""","""A""",2,"""B""","""B""",3,"""C""","""C""",4,"""D""","""D""",5,"""F""","""F"""
+,,,,,,,,B7. Neighborhood Life,B7. Vida De La Vecindad,,,,,,,,,,,,,,,
+B,7,,,category,,,,What grade would you give to the schools in your Neighborhood? ,¿Qué calificación le daría a las escuelas de su vecindario?,1,"""A""","""A""",2,"""B""","""B""",3,"""C""","""C""",4,"""D""","""D""",5,"""F""","""F"""
+,,,,,,,,B8. Neighborhood Life,B8. Vida De La Vecindad,,,,,,,,,,,,,,,
+B,8,,,category,,,,What grade would you give of the sanitation department for its work keeping your Neighborhood clean? ,¿Qué nota le darías del departamento de sanidad para su labor de mantenimiento de su vecindario limpio?,1,"""A""","""A""",2,"""B""","""B""",3,"""C""","""C""",4,"""D""","""D""",5,"""F""","""F"""
+,,,,,,,,B9. Neighborhood Life,B9. Vida De La Vecindad,,,,,,,,,,,,,,,
+B,9,,,text,,,,"Overall, what would you say is the best thing about living in Neighborhood?","En general, ¿qué diría usted que es lo mejor de vivir en vecindad?",,,,,,,,,,,,,,,
+,,,,,,,,C1. Personal Life,C1. Personal Life,,,,,,,,,,,,,,,
+C,1,,,category,,,,<p>Now I will ask a few questions about you. Remember you have the right not to answer any of my questions.</p><p>What is your sex?</p>,<p>Ahora haré algunas preguntas acerca de usted. Recuérdele para tener la derecha de no contestar a cualesquiera de mis preguntas.</p><p>¿Cuál es su sexo?</p>,0,Male,Hombre,1,Female,Mujer,2,Other,Otro,,,,,,
+C,1a,,,text,,C1!=2->' ',,"Please describe what you mean by ""other""",,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,C2. Personal Life,C2. Personal Life,,,,,,,,,,,,,,,,,,,,,
+C,2,,,category,,,,Are you of Hispanic/Latino origin?,¿Está usted de origen hispánico/del Latino?,1,Yes,Sí,2,No,No,,,,,,,,,,,,,,,
+,,,,,,,,C3. Personal Life,C3. Personal Life,,,,,,,,,,,,,,,,,,,,,
+C,3,,,category,,,,In regards to your race do you consider yourself:,En vista de su raza usted se considera:,1,White/Caucasian,Blanco / Caucásico,2,Black/African American,Negro / Afroamericano,3,Asian,Asiático ,4,American Indian or Alaska Native,Natural Indio o de Alaska Americano,5,Other,Otro,,,,,,
+C,3a,,,text,,C3!=5->' ',,"Please describe what you mean by ""other""",,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,C4. Personal Life,C4. Personal Life,,,,,,,,,,,,,,,,,,,,,
+C,4,,,category,,,,What is your age?,¿Cuál es su edad?,1,18 years to 24 years,18 años a 24 años,2,25 years to 34 years,25 años a 34 años,3,35 years to 44 years,35 años a 44 años,4,45 years to 54 years,45 años a 54 años,5,55 years to 64 years,55 años a 64 años,6,65 years to 74 years,65 años a 74 años,7,75+,75+
+,,,,,,,,C5. Personal Life,C5. Personal Life,,,,,,,,,,,,,,,,,,,,,
+C,5,,,category,,,,"Do you rent, own your home or apartment, or just stay there?","¿Usted alquila, poseyó su hogar o apartamento, o apenas permanecía allí?",1,Rent,Alquiler,2,Own,Poseer,3,I just stay there,No me quedo,,,,,,,,,,,,
+,,,,,,,,C6. Personal Life,C6. Personal Life,,,,,,,,,,,,,,,,,,,,,
+C,6,,,category,,,,"Are you currently working, either on or off the books?","¿Está trabajando actualmente, ya sea dentro o fuera de los libros?",1,Yes,Sí,2,No,No,,,,,,,,,,,,,,,
+,,,,,,,,C7. Personal Life,C7. Personal Life,,,,,,,,,,,,,,,,,,,,,
+C,7,,,category,,,,"Thinking about your future, do you think that 5 years from now... ","Pensando en su futuro, usted piensa que 5 años de ahora en adelante... ",1,I will be better off than I am now,Voy a estar mejor que ahora está,2,I will be worse off,Voy a estar peor,3,I will be about the same,Voy a ser aproximadamente la misma,,,,,,,,,,,,
+,,,,,,,,D1. Future Surveys,D1. Futuras Encuestas,,,,,,,,,,,,,,,,,,,,,
+D,1,,,category,,,,"If we decided to do a similar follow-up survey 6 months from now and offered you $5 for your participation, how likely would you be to participate?","<p>Esta es la última sección de la encuesta. Voy a pedir que las preguntas sobre sus opiniones en encuestas, y qué tan probable es que usted complete una encuesta futuro para nosotros.</p><p>Si decidimos hacer una similar encuesta de seguimiento de 6 meses desde ahora y le ofreció cinco dólares por su participación, ¿qué tan probable sería que participar?</p>",1,Very Likely,Muy Probable,2,Somewhat Likely,Un poco Probable,3,Somewhat Unlikely,Algo Improbable,4,Very Unlikely,Muy Improbable,,,,,,,,,
+,,,,,,,,D2. Future Surveys,D2. Futuras Encuestas,,,,,,,,,,,,
+D,2,,,category,,,,"If we decided to do a similar follow-up survey 6 months from now and offered you $10 for your participation, how likely would you be to participate?","Si decidimos hacer una similar encuesta de seguimiento de 6 meses desde ahora y le ofreció $ 10 por su participación, ¿qué tan probable sería que participar?",1,Very Likely,Muy Probable,2,Somewhat Likely,Un poco Probable,3,Somewhat Unlikely,Algo Improbable,4,Very Unlikely,Muy Improbable
+,,,,,,,,D3. Future Surveys,D3. Futuras Encuestas,,,,,,,,,,,,
+D,3,,,category,,,,"If we decided to do a similar follow-up survey 6 months from now and offered you $20 for your participation, how likely would you be to participate?","Si decidimos hacer una similar encuesta de seguimiento de 6 meses desde ahora y le ofreció $ 20 por su participación, ¿qué tan probable sería que participar?",1,Very Likely,Muy Probable,2,Somewhat Likely,Un poco Probable,3,Somewhat Unlikely,Algo Improbable,4,Very Unlikely,Muy Improbable
+,,,,,,,,D4. Future Surveys,D4. Futuras Encuestas,,,,,,,,,,,,
+D,4,,,category,,,,"If we asked you to go to an internet website to complete the follow-up survey, how likely would you be to participate?","Si le pedimos que vaya a un sitio en Internet para completar la encuesta de seguimiento, ¿qué tan probable sería que participar?",1,Very Likely,Muy Probable,2,Somewhat Likely,Un poco Probable,3,Somewhat Unlikely,Algo Improbable,4,Very Unlikely,Muy Improbable
+,,,,,,,,D5. Future Surveys,D5. Futuras Encuestas,,,,,,,,,,,,
+D,5,,,category,,,,"If we called you and asked you to answer the survey questions over the phone, how likely would you be to participate?","Si le llamó y le pidió que responder a las preguntas de la encuesta por teléfono, ¿qué tan probable sería que participar?",1,Very Likely,Muy Probable,2,Somewhat Likely,Un poco Probable,3,Somewhat Unlikely,Algo Improbable,4,Very Unlikely,Muy Improbable
+,,,,,,,,D6. Future Surveys,D6. Futuras Encuestas,,,,,,,,,,,,
+D,6,,,category,,,,"If we sent you a questionnaire by mail and asked you to complete it on your own and send it back to us (and we paid for postage), how likely would you be to participate?","Si le enviamos un cuestionario por correo y le pidió que se completa por su cuenta y enviar de nuevo a nosotros (y hemos pagado por gastos de envío), ¿qué tan probablemente que participar?",1,Very Likely,Muy Probable,2,Somewhat Likely,Un poco Probable,3,Somewhat Unlikely,Algo Improbable,4,Very Unlikely,Muy Improbable
+,,,,,,,,D7. Future Surveys,D7. Futuras Encuestas,,,,,,,,,,,,
+D,7,,,category,,,,"Now suppose we asked you to be a part of a 3 year study and to complete 1 or 2 surveys a month in exchange for $10 per completed survey, how likely would you be to participate?","Ahora supongamos que usted pidió ser parte de un estudio de 3 años y paracompletar una o dos encuestas por mes a cambio de $ 10 por encuesta completada, ¿qué tan probable sería que participar?",1,Very Likely,Muy Probable,2,Somewhat Likely,Un poco Probable,3,Somewhat Unlikely,Algo Improbable,4,Very Unlikely,Muy Improbable
+,,,,,,,,D8. Future Surveys,D8. Futuras Encuestas,,,,,,,,,,,,
+D,8,,,category,,,,"Now suppose we asked you to be a part of a 3 year study and to complete 1 or 2 surveys a month in exchange for $20 per completed survey, how likely would you be to participate?","Ahora supongamos que usted pidió ser parte de un estudio de 3 años y paracompletar una o dos encuestas por mes a cambio de $ 20 por encuesta completada, ¿qué tan probable sería que participar?",1,Very Likely,Muy Probable,2,Somewhat Likely,Un poco Probable,3,Somewhat Unlikely,Algo Improbable,4,Very Unlikely,Muy Improbable
+,,,,,,,,D9. Future Surveys,D9. Futuras Encuestas,,,,,,,,,,,,
+D,9,,,category,,,,"How about if, instead of giving you $10 or $20 per completed survey, we gave you a computer paid for your internet connection, and gave you $5 per completed survey? How likely would you be to participate? (Remember that we would be asking you to complete about 20 surveys a year for 3 years).","¿Qué tal si en vez de darle $ 10 o $ 20 por encuesta completada, le dio un equipopaga por su conexión a Internet, y le dio $ 5 por encuesta completada? ¿Qué tan probable sería que participar? (Recuerde que se le pide que para completar cerca de 20 encuestas al año durante 3 años).",1,Very Likely,Muy Probable,2,Somewhat Likely,Un poco Probable,3,Somewhat Unlikely,Algo Improbable,4,Very Unlikely,Muy Improbable
+,,,,,,,,D10. Future Surveys,D10. Futuras Encuestas,,,,,,,,,,,,
+D,10,,,category,,,,"What about if we gave you a smart phone or i-pad paid for your internet connection and $5 per completed interview, how likely would you be to participate?  ","¿Qué pasa si le dieron un teléfono inteligente o una almohadilla de i-pagada para suconexión a internet y dio cinco dólares por entrevista completa, ¿qué tan probablesería que participar?",1,Very Likely,Muy Probable,2,Somewhat Likely,Un poco Probable,3,Somewhat Unlikely,Algo Improbable,4,Very Unlikely,Muy Improbable

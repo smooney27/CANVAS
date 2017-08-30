@@ -1,0 +1,19 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+<h3>Administrator</h3>
+<p>
+What would you like to do now?
+</p>
+<ul>
+  {% for task in tasks %}
+    <li>
+      <a href="{{ task.url }}">{{ task.taskname }}</a>
+    </li>
+  {% endfor %}
+  <li>
+    <a href="{% url admin:index %}">See low-level Admin UI</a>
+  </li>
+</ul>
+
+{% endblock %}

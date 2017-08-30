@@ -1,0 +1,48 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+<h3>Agreement Analysis</h3>
+
+<h3>{{item.name}}:{{item.description}}</h3>
+<ul>
+  {% for category in categories %}
+    <li>{{category.db_value}}: {{category.name}}</li>
+  {% endfor %}
+  <li>-1: Cannot Tell</li>
+  <li>-2: Skipped</li>
+</ul>
+<table>
+  <tr>
+    <th>Segment</th>
+    {% for rater in raters %}
+      <th>{{rater.username}}</th>
+    {% endfor %}
+    <th>Actions</th>
+  </tr>
+  {% for segment, ratings in ratings_by_segment.items %}
+    <tr>
+      <td>
+        {{segment}}
+      </td>
+      <!-- this is a horrible hack to work around django template language limitation looking up dynamic dictionary values.-->
+      {% for rater in raters %}
+        <td>&nbsp;
+        {% for user,rating in ratings.items %}
+          {% if rater == user %}
+            {{rating}}
+          {% endif %}
+        {% endfor %}
+        </td>
+      {% endfor %}
+      <td>
+        <button onclick="g_streetview_service.open_pano_window('{% url ratestreets.views.pano segment_id=segment.id %}')">view</button>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+<h3>Help</h3>
+{% autoescape off %}
+  {{item.get_help_text}}
+{% endautoescape %}
+
+{% endblock %}

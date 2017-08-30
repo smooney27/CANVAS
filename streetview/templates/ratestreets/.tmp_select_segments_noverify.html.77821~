@@ -1,0 +1,208 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+  <script type="text/javascript"
+      src="http://maps.google.com/maps/api/js?key=AIzaSyDlHAUusZNHMySxy8ZwGG1mkstCjJm2tRE&libraries=geometry&sensor=false">
+  </script>
+  <script type="text/javascript">
+    var green_icon = new google.maps.MarkerImage('http://www.google.com/intl/en_us/mapfiles/ms/micons/green-dot.png');
+    var found_segment_list = new Array();
+	var found_segment_map = null;
+    var failure_map = new Array();
+    var failure_count = 0;
+    var g_sv = new google.maps.StreetViewService();
+	var found_segment_map_options = {
+      zoom: 14,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    var found_segment_bounds = new google.maps.LatLngBounds();
+    var streetview_items = new Array();
+    function add_to_queue(item, segment_info, wrapper_id) {
+      $('#'+wrapper_id).hide();
+      streetview_items.push({id:item, segment:segment_info, wrapper_id:wrapper_id});
+      streetview_item_count++;
+      $('#search_items').text('searching for ' + streetview_item_count + ' segments');
+    }    
+    function add_to_queue(item, segment_info) {
+      streetview_items.push({id:item, segment:segment_info});
+    }
+    function StreetviewLocationSelector(settings) {
+      this.pano = null;
+	  this.start_location = new google.maps.LatLng(settings.start_lat, settings.start_lng);
+	  this.end_location = new google.maps.LatLng(settings.end_lat, settings.end_lng);
+      this.start_lat_input = null;
+      this.start_lng_input = null;
+      this.end_lat_input = null;
+      this.end_lng_input = null;
+      this.pov_input = null;
+      if (typeof(settings.lat_input) != 'undefined') {
+        this.lat_input = settings.lat_input;
+      }
+      if (typeof(settings.lng_input) != 'undefined') {
+        this.lng_input = settings.lng_input;
+      }
+      if (typeof(settings.pov_input) != 'undefined') {
+        this.pov_input = settings.pov_input;
+      }
+      if (typeof(settings.pano_element) != 'undefined') {
+        this.pano_element = settings.pano_element;
+      }
+      var streetview_callback = function(selector) { 
+      	return function(data, status) {	
+	      if (status == "ZERO_RESULTS" || data == null) {
+    	    failed_segment_list.push({start:selector.start_location, end:selector.end_location, mapped:false});
+          }
+		  else {
+	        found_segment_list.push({start:selector.start_location, end:selector.end_location, mapped:false});
+		  }
+		}
+	  }(this);
+	  g_sv.getPanoramaByLocation(this.start_location, 50, streetview_callback);
+   }
+   function loadnextsegment() {
+      if ((found_segment_list.length + failure_count) % 2 == 0) {
+        update_found_segment_map();
+      } 
+      var segment_item = streetview_items.shift();
+      if (segment_item != null) {
+        var segment = segment_item.segment;
+        if (segment.start_lat == null) {
+          load_segment_from_address(segment_item.id, segment.street_address)
+        } else {
+          load_segment_from_segment_info(segment_item.id, segment);
+        }
+      }
+    }
+    function load_segment_from_address(id, address) {
+      var geocoder = new google.maps.Geocoder();
+      geocoder.geocode({address:address}, function (results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          var address_location = results[0].geometry.location
+          segment = {
+            start_lat:address_location.lat(),
+            start_lng:address_location.lng(),
+            end_lat:address_location.lat(),
+            end_lng:address_location.lng()
+          }
+          load_segment_from_segment_info(id, segment);
+        }
+      });
+    }
+    function load_segment_from_segment_info(id, segment) {
+      var start_lat_input = $('input[name=' + id + '-start_lat]')[0];
+      var start_lng_input = $('input[name=' + id + '-start_lng]')[0];
+      var end_lat_input = $('input[name=' + id + '-end_lat]')[0];
+      var end_lng_input = $('input[name=' + id + '-end_lng]')[0];
+      var segment_selector = new StreetviewLocationSelector({start_lat: segment.start_lat,
+                                                             start_lat_input: start_lat_input, 
+                                                             start_lng: segment.start_lng,
+                                                             start_lng_input: start_lng_input, 
+															 end_lat: segment.end_lat, 
+                                                             end_lat_input: end_lat_input,
+                                                             end_lng: segment.end_lng,
+                                                             end_lng_input: end_lng_input})
+      update_found_segment_map();
+      // When we finish loading a segment, check for more segments to load...
+      setTimeout(loadnextsegment, 1000);
+    }
+    function update_found_segment_map() {
+      for (found_segment_i in found_segment_list) {
+        var segment = found_segment_list[found_segment_i];
+        if (segment.mapped == false) {
+          var path = [segment.start, segment.end]
+          var segmentPath = new google.maps.Polyline({
+            path:path,
+            strokeColor: "#00FF00",
+            strokeOpacity: 1.0,
+            strokeWeight: 3
+          });
+          segmentPath.setMap(found_segment_map);
+          found_segment_bounds.extend(segment.start);
+          found_segment_bounds.extend(segment.end);
+          segment.mapped = true;
+        }
+      }
+      for (failure_i in failure_map) {
+        var failure_location = failure_map[failure_i];
+        if (failure_location.mapped == false) {
+          var x11 = new google.maps.LatLng(failure_location.location.lat() - .001, failure_location.location.lng() - .001);
+          var x12 = new google.maps.LatLng(failure_location.location.lat() + .001, failure_location.location.lng() + .001);
+          var x21 = new google.maps.LatLng(failure_location.location.lat() + .001, failure_location.location.lng() - .001);
+          var x22 = new google.maps.LatLng(failure_location.location.lat() - .001, failure_location.location.lng() + .001);
+          var path1 = [x11, x12];
+          var segmentPath1 = new google.maps.Polyline({
+            path:path1,
+            strokeColor: "#FF0000",
+            strokeOpacity: 1.0,
+            strokeWeight: 3
+          });
+          segmentPath1.setMap(found_segment_map);
+          var path2 = [x21, x22];
+          var segmentPath2 = new google.maps.Polyline({
+            path:path2,
+            strokeColor: "#FF0000",
+            strokeOpacity: 1.0,
+            strokeWeight: 3
+          });
+          segmentPath2.setMap(found_segment_map);
+          found_segment_bounds.extend(failure_location.location);
+          failure_location.mapped = true;
+        }
+      }
+      found_segment_map.fitBounds(found_segment_bounds);
+    }
+    function updateMarker(marker, position) {
+      marker.setPosition(position);
+    }
+    $(document).ready(function(){
+      found_segment_map = new google.maps.Map($('#found_segment_map')[0], found_segment_map_options);
+      loadnextsegment();
+    });
+  </script>
+  <div id="search_items"></div>
+  <div id="found_items"></div>
+  <div id="failure_items"></div>
+  <button onclick="update_found_segment_map()">Show Segments Found So Far</button>
+  <button onclick="select_found_segments()">Select Found Segments</button>
+  <button onclick="document.getElementById('the_form').submit()">Commit Selected Segments</button>
+  <div id="found_segment_map" style="width:800px; height:600px"></div>
+  <form action="{{ confirm_url }}" method="post">
+    {% csrf_token %}
+    {% autoescape off %}
+        {{ segment_formset.management_form }}
+        {% for form in segment_formset.forms %}
+            {{ form.render_heading }}
+            {{ form.render_script }}
+            <table>
+              <tr>
+                {% for field in form %}
+                  {% if field.is_hidden %}
+                    <td>
+                    </td>
+                  {% else %}
+                    <td>
+                      {{ field.errors }}
+                    </td>
+                  {% endif %}
+                {% endfor %}
+              </tr>
+              <tr>
+                {% for field in form %}
+                  {% if field.is_hidden %}
+                    <td>
+                      {{ field }}
+                    </td>
+                  {% else %}
+                    <td>
+                      {{ field.label_tag }}:{{ field }}
+                    </td>
+                  {% endif %}
+                {% endfor %}
+              </tr>
+            </table>
+            <hr/>
+        {% endfor %}
+    {% endautoescape %}
+    <input type="submit" value="Select" />
+  </form>
+{% endblock %}

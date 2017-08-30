@@ -1,0 +1,89 @@
+{% extends "logged_in.html" %}
+
+{% block content %}
+  <script type="text/javascript"
+      src="http://maps.google.com/maps/api/js?sensor=false">
+  </script>
+  <script type="text/javascript">
+    streetview_service = new StreetviewService();
+    lat_lng_segments = [
+      {% for segment in segments %}
+        {% if segment.start_lat %}
+          [ {{ segment.start_lat }},{{ segment.start_lng }}, {{ segment.end_lat }},{{ segment.end_lng }}],
+        {% endif %}
+      {% endfor %}
+    ];
+    address_segments = [
+      {% for segment in segments %}
+        {% if segment.street_address %}
+          '{{ segment.street_address }}',
+        {% endif %}
+      {% endfor %}
+    ];
+    function loadallsegments() {
+      if (lat_lng_segments.length > 0) {
+        loadonesegment(0, 'lat_long');
+      } else if (address_segments.length > 0) {
+        loadonesegment(0, 'street_address');
+      } else {
+        alert('No segments defined for this study!');
+      }
+    }
+    function loadonesegment(i, segment_type) {
+      document.getElementById('segment_list').style.display='none';
+      document.getElementById('pano_list').style.display='';
+      var elementid = 'pano_' + i;
+      var wrapper_div = document.createElement('div');
+      wrapper_div.style.height='220px';
+      wrapper_div.style.width='350px';
+      wrapper_div.style.border='1px solid black';
+      wrapper_div.style.cssFloat='left';
+      var header_div = document.createElement('div');
+      header_div.style.height='20px';
+      header_div.style.width='350px';
+      if (segment_type == 'lat_long') {
+        var segment_header = '(' + lat_lng_segments[i][0] + ',' + lat_lng_segments[i][1] + ')->(' + lat_lng_segments[i][2] + ',' + lat_lng_segments[i][3] + ')';
+      } else {
+        var segment_header = address_segments[i];
+      }
+      header_div.appendChild(document.createTextNode(segment_header));
+      var inner_div = document.createElement('div');
+      inner_div.style.height='200px';
+      inner_div.style.width='350px';
+      inner_div.id = elementid;
+      wrapper_div.appendChild(header_div);
+      wrapper_div.appendChild(inner_div);
+      document.getElementById('pano_list').appendChild(wrapper_div);
+      inner_div.appendChild(document.createTextNode('No street view data found'));
+      var pano_element = document.getElementById(elementid);
+      if (segment_type == 'lat_long') {
+        streetview_service.initialize(lat_lng_segments[i][0], lat_lng_segments[i][1], lat_lng_segments[i][2], lat_lng_segments[i][3], pano_element);
+        if (i < lat_lng_segments.length-1) {
+          setTimeout(function(){loadonesegment(i+1, 'lat_long')}, 1000);
+        } else {
+          setTimeout(function(){loadonesegment(0, 'street_address')}, 1000);
+        }
+      } else {
+        streetview_service.initialize_for_addresses(address_segments[i], pano_element);
+        if (i < address_segments.length-1) {
+          setTimeout(function(){loadonesegment(i+1, 'street_address')}, 1000);
+        }
+      }
+    }
+  </script>
+  <button onclick="loadallsegments()">Load Views</button>
+  <div id="segment_list">
+    <ul>
+      {% for segment in segments %}
+        {% if segment.street_address %}
+          <li>{{ segment.street_address }}</li>
+        {% else %}
+          <li>{{ segment.start_lat }},{{ segment.start_lng }}</li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+  <div id="pano_list" style="width:100%;min-height:100%;display:none;">&nbsp;
+  </div>
+
+{% endblock %}

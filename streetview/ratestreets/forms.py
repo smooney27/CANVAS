@@ -13,6 +13,11 @@ RatingFormSet = modelformset_factory(Rating)
 class SegmentAutoselectFileForm(Form):
     study = ModelChoiceField(queryset=None)
     segment_file = FileField()
+    SEGMENT_AUTOSELECT_CHOICES = (
+                              ('1', "Block faces"),
+                              ('2', "Points")
+                              )
+    segment_type = TypedChoiceField(choices = SEGMENT_AUTOSELECT_CHOICES, empty_value=None, label="File Format")
     def __init__(self, request, *args, **kwargs):
         Form.__init__(self, *args, **kwargs)
         self.fields['study'].queryset=Study.objects.filter(managers=request.user)

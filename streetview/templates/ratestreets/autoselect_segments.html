@@ -92,7 +92,13 @@
                 // Give up.
                 autoselector.manager.recordFailure(autoselector.first_location);
               }
-            } else {
+            } else if (autoselector.manager.segment_type == "points") {
+              autoselector.manager.setMarker(data.location.latLng, "Only");
+              if (autoselector.address_input != null) {
+                autoselector.address_input.value = data.location.description;
+ 			  }  
+              autoselector.SetLocation(location, data.location.pano);
+			} else {
 
               // If we're trying to find an end point or if we just started and can go anywhere, seach for best heading.
               if (data.links.length == 2 || (move_if_possible && data.links.length > 0)) {
@@ -213,6 +219,7 @@
       this.start_location = null;
       this.end_location = null;
       this.added_to_found_list = false;
+	  this.segment_type = search_settings.segment_type;
       this.wrapper_id = search_settings.wrapper_id;
       this.setMarker = function(location, label) {
         if (label=='Start') { 
@@ -233,6 +240,14 @@
                                                                       });
         }
         else if (label=='End') { this.end_location = location; }
+		else if (label=='Only') { 
+		  this.start_location = location; 
+		  search_settings.start_lat_input.value = location.lat()  
+		  search_settings.start_lng_input.value = location.lng()  
+		  this.end_location = location;
+		  search_settings.end_lat_input.value = location.lat()  
+		  search_settings.end_lng_input.value = location.lng()  
+		}
         else if (label=='FirstHit') { 
           // Record the first hit, so we can search the other way for an end location
           this.first_hit_location = location; 
@@ -266,6 +281,7 @@
       $('#'+this.wrapper_id).show();
       // Start heading of null tells the autoselector to take the first heading google offers.
       var start_heading = null;
+	  var label = search_settings.segment_type == "points" ? 'Only' : 'Start';                                                     
       this.start_location_selector = new StreetviewLocationAutoselector({lat: search_settings.segment.lat,
                                                                         lat_input: search_settings.start_lat_input, 
                                                                         lng: search_settings.segment.lng,
@@ -274,8 +290,8 @@
                                                                         start_heading: start_heading,
                                                                         move_if_possible: false,
                                                                         manager: function(manager) { return new function() { return manager; }} (this),
-                                                                        label: 'Start'
-                                                                        });
+                                                                        label: label
+																		});
     }
     
     function km_to_degrees(distance, current_lat) {
@@ -385,6 +401,7 @@
       search_settings.auto_id = id;
       search_settings.segment = segment;
       search_settings.wrapper_id = wrapper_id;
+	  search_settings.segment_type = "{{segment_type}}";
       var search_manager = new SearchManager(search_settings);
       search_managers.push(search_manager);
     }

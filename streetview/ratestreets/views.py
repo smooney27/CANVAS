@@ -348,8 +348,12 @@ def startsegmentautoselect(request, study_id=None):
         if (form.is_valid()):
             study = form.cleaned_data['study']
             confirm_url = reverse('ratestreets.views.confirmautoselect', args=[study.id])
+            if (form.cleaned_data['segment_type'] == '2'):
+                segment_type = "points"
+            else:
+                segment_type = "segments"
             segment_autoselect_formset = ViewUtils.create_segment_autoselect_formset_from_file(study, request.FILES['segment_file'], save_targets=True, filetype="address_list")
-            return render_to_response('ratestreets/autoselect_segments.html', {'segment_autoselect_formset': segment_autoselect_formset, 'confirm_url': confirm_url}, context_instance=RequestContext(request))
+            return render_to_response('ratestreets/autoselect_segments.html', {'segment_autoselect_formset': segment_autoselect_formset, 'confirm_url': confirm_url, 'segment_type': segment_type}, context_instance=RequestContext(request))
     else:
         form = SegmentAutoselectFileForm(request)
         if (study_id != None):
